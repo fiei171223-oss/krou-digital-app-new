@@ -1,0 +1,143 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper Functions
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 1. Validation Blueprints
+    function isValidStudent(data) {
+      return data.keys().hasAll(['id', 'name', 'grade', 'gender', 'stars', 'badges']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 100 &&
+             data.grade is number && data.grade >= 1 && data.grade <= 12 &&
+             data.gender in ['male', 'female'] &&
+             data.stars is map &&
+             data.badges is list && data.badges.size() <= 50;
+    }
+
+    function isValidDailyLog(data) {
+      return data.keys().hasAll(['date']) &&
+             data.date is string && data.date.size() <= 20 &&
+             (!data.keys().contains('lessons') || data.lessons is list) &&
+             (!data.keys().contains('homeworks') || data.homeworks is list) &&
+             (!data.keys().contains('teacherMessage') || (data.teacherMessage is string && data.teacherMessage.size() <= 5000));
+    }
+
+    function isValidMathMaterial(data) {
+      return data.keys().hasAll(['id', 'name', 'total', 'status']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 200 &&
+             data.total is number && data.total >= 0 &&
+             data.status in ['good', 'damaged', 'lost'];
+    }
+
+    function isValidMathAssessment(data) {
+      return data.keys().hasAll(['studentId', 'date', 'numberRecognition', 'calculation', 'placeValue', 'wordProblem', 'level']) &&
+             data.studentId is string && data.studentId.size() <= 128 &&
+             data.date is string && data.date.size() <= 20 &&
+             data.level in ['low', 'medium', 'high'];
+    }
+
+    function isValidStrategyImplementation(data) {
+      return data.keys().hasAll(['strategyId', 'strategyName', 'date', 'effectiveness', 'reflection', 'engagementLevel']) &&
+             data.strategyId is string && data.strategyId.size() <= 128 &&
+             data.strategyName is string && data.strategyName.size() <= 200 &&
+             data.effectiveness is number && data.effectiveness >= 1 && data.effectiveness <= 5 &&
+             data.reflection is string && data.reflection.size() <= 2000 &&
+             data.engagementLevel in ['low', 'medium', 'high'];
+    }
+
+    // 2. Resource Rules
+
+    match /students/{studentId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(studentId) && isValidStudent(incoming());
+      allow update: if isSignedIn() && isValidStudent(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasAny(['stars', 'badges', 'photoUrl', 'health', 'name', 'grade', 'gender', 'updatedAt'])
+      );
+      allow delete: if isSignedIn();
+    }
+
+    match /daily_logs/{logId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(logId) && isValidDailyLog(incoming());
+      allow update: if isSignedIn() && isValidDailyLog(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasAny(['lessons', 'homeworks', 'teacherMessage', 'parentFeedbacks'])
+      );
+      allow delete: if isSignedIn();
+    }
+
+    match /professional_dev/{resourceId} {
+      allow read: if true;
+      allow write: if isSignedIn() && isValidId(resourceId);
+    }
+
+    match /school_events/{eventId} {
+      allow read: if true;
+      allow write: if isSignedIn() && isValidId(eventId);
+    }
+
+    match /math_materials/{materialId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(materialId) && isValidMathMaterial(incoming());
+      allow update: if isSignedIn() && isValidMathMaterial(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasAny(['total', 'status', 'notes'])
+      );
+      allow delete: if isSignedIn();
+    }
+
+    match /math_assessments/{assessmentId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(assessmentId) && isValidMathAssessment(incoming());
+      allow update: if isSignedIn() && isValidMathAssessment(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasAny(['numberRecognition', 'calculation', 'placeValue', 'wordProblem', 'level'])
+      );
+      allow delete: if isSignedIn();
+    }
+
+    match /certificates/{certificateId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(certificateId);
+      allow delete: if isSignedIn();
+    }
+
+    match /seating_charts/{chartId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && isValidId(chartId);
+    }
+
+    match /teaching_strategies/{strategyId} {
+      allow read: if true;
+      allow write: if isSignedIn() && isValidId(strategyId);
+    }
+
+    match /strategy_implementations/{implementationId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(implementationId) && isValidStrategyImplementation(incoming()) && (
+        exists(/databases/$(database)/documents/teaching_strategies/$(incoming().strategyId)) || // If it exists as a doc
+        true // Or just allow if strategyId is provided (some are hardcoded)
+      );
+      allow update: if isSignedIn() && isValidStrategyImplementation(incoming());
+      allow delete: if isSignedIn();
+    }
+  }
+}

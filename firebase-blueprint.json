@@ -1,0 +1,232 @@
+{
+  "entities": {
+    "Student": {
+      "title": "Student",
+      "description": "Represents a student and their achievements.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "grade": { "type": "number" },
+        "gender": { "type": "string", "enum": ["male", "female"] },
+        "stars": {
+          "type": "object",
+          "properties": {
+            "cleanliness": { "type": "number" },
+            "friendliness": { "type": "number" },
+            "helpingOthers": { "type": "number" },
+            "learningActivity": { "type": "number" },
+            "groupWork": { "type": "number" },
+            "homework": { "type": "number" }
+          },
+          "required": ["cleanliness", "friendliness", "helpingOthers", "learningActivity", "groupWork", "homework"]
+        },
+        "badges": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "photoUrl": { "type": "string" },
+        "health": {
+          "type": "object",
+          "properties": {
+            "height": { "type": "number" },
+            "weight": { "type": "number" },
+            "bmi": { "type": "number" },
+            "vaccines": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "date": { "type": "string" },
+                  "nextDate": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "grade", "gender", "stars", "badges"]
+    },
+    "DailyLog": {
+      "title": "Daily Log",
+      "description": "Daily teaching and homework record for parents.",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string" },
+        "lessons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "subject": { "type": "string" },
+              "topic": { "type": "string" }
+            }
+          }
+        },
+        "homeworks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "task": { "type": "string" },
+              "deadline": { "type": "string" }
+            }
+          }
+        },
+        "teacherMessage": { "type": "string" },
+        "parentFeedbacks": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "ProfessionalDev": {
+      "title": "Professional Development",
+      "description": "Resources for teachers.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "type": { "type": "string", "enum": ["method", "technology", "news"] },
+        "url": { "type": "string" }
+      }
+    },
+    "SchoolEvent": {
+      "title": "School Event",
+      "description": "Calendar events for the school.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "date": { "type": "string" },
+        "type": { "type": "string" }
+      }
+    },
+    "MathMaterial": {
+      "title": "Math Material",
+      "description": "Concrete teaching materials inventory for math.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "total": { "type": "number" },
+        "status": { "type": "string", "enum": ["good", "damaged", "lost"] },
+        "notes": { "type": "string" }
+      }
+    },
+    "MathAssessment": {
+      "title": "Math Assessment",
+      "description": "Student assessment scores for math skills.",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "date": { "type": "string" },
+        "numberRecognition": { "type": "number" },
+        "calculation": { "type": "number" },
+        "placeValue": { "type": "number" },
+        "wordProblem": { "type": "number" },
+        "level": { "type": "string", "enum": ["low", "medium", "high"] }
+      }
+    },
+    "Certificate": {
+      "title": "Certificate",
+      "description": "Digital certificate for student motivation.",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "date": { "type": "string" },
+        "awardType": { "type": "string" },
+        "teacherSignature": { "type": "string" },
+        "templateId": { "type": "string" }
+      }
+    },
+    "SeatingChart": {
+      "title": "Seating Chart",
+      "description": "Classroom furniture and student placement chart.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "rows": { "type": "number" },
+        "cols": { "type": "number" },
+        "studentPositions": { "type": "object" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "TeachingStrategy": {
+      "title": "Teaching Strategy",
+      "description": "21st-century pedagogical teaching strategies.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "purpose": { "type": "string" },
+        "description": { "type": "string" },
+        "steps": { "type": "array", "items": { "type": "string" } },
+        "materials": { "type": "array", "items": { "type": "string" } },
+        "category": { "enum": ["active", "management", "reading", "math", "engagement"] },
+        "subject": { "type": "array", "items": { "type": "string" } },
+        "icon": { "type": "string" },
+        "videoUrl": { "type": "string" },
+        "pdfUrl": { "type": "string" }
+      }
+    },
+    "StrategyImplementation": {
+      "title": "Strategy Implementation",
+      "description": "Teacher reflection and tracking of strategy usage.",
+      "type": "object",
+      "properties": {
+        "strategyId": { "type": "string" },
+        "strategyName": { "type": "string" },
+        "date": { "type": "string" },
+        "effectiveness": { "type": "number" },
+        "reflection": { "type": "string" },
+        "engagementLevel": { "enum": ["low", "medium", "high"] },
+        "grade": { "type": "number" },
+        "subject": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Collection of students with their star ratings, badges, and health info."
+    },
+    "/daily_logs/{logId}": {
+      "schema": "DailyLog",
+      "description": "Daily activity logs for families."
+    },
+    "/professional_dev/{resourceId}": {
+      "schema": "ProfessionalDev",
+      "description": "Teaching resources."
+    },
+    "/school_events/{eventId}": {
+      "schema": "SchoolEvent",
+      "description": "School calendar events."
+    },
+    "/math_materials/{materialId}": {
+      "schema": "MathMaterial",
+      "description": "Inventory of math teaching tools."
+    },
+    "/math_assessments/{assessmentId}": {
+      "schema": "MathAssessment",
+      "description": "Student math performance records."
+    },
+    "/certificates/{certificateId}": {
+      "schema": "Certificate",
+      "description": "Digital award certificates issued to students."
+    },
+    "/seating_charts/{chartId}": {
+      "schema": "SeatingChart",
+      "description": "Customized classroom seating arrangements."
+    },
+    "/teaching_strategies/{strategyId}": {
+      "schema": "TeachingStrategy",
+      "description": "Library of 21st-century teaching strategies."
+    },
+    "/strategy_implementations/{implementationId}": {
+      "schema": "StrategyImplementation",
+      "description": "Teacher reflections on strategy implementation."
+    }
+  }
+}

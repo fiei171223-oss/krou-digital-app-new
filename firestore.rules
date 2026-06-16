@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Basic rules for prototype/demo
+    match /{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Specific matchers to ensure these collections stay visible if there are top-level rules
+    match /students/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /attendance/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /scores/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /daily_logs/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /difficult_words/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /events/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /tasks/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /checklist/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /leave_requests/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /communication/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /inventory/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /book_lending/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /extra_classes/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /schedule/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /classroom_config/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /professional_dev/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /school_events/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /math_materials/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /math_assessments/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /certificates/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /seating_charts/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /teaching_strategies/{id} { allow read: if true; allow write: if request.auth != null; }
+    match /strategy_implementations/{id} { allow read: if true; allow write: if request.auth != null; }
+  }
+}
