@@ -84,6 +84,7 @@ import SchoolArchiveView from './components/SchoolArchiveView';
 import DifficultWordsView from './components/DifficultWordsView';
 import AtRiskWarningView from './components/AtRiskWarningView';
 import QRScannerView from './components/QRScannerView';
+import StudentQRView from './components/StudentQRView';
 import TeachingScheduleView from './components/TeachingScheduleView';
 import ParentCommunicationView from './components/ParentCommunicationView';
 import ClassroomManagementView from './components/ClassroomManagementView';
@@ -263,6 +264,7 @@ export default function App() {
               {view === 'difficult-words' && <DifficultWordsView onBack={onBack} />}
               {view === 'at-risk-warning' && <AtRiskWarningView onBack={onBack} />}
               {view === 'qr-scanner' && <QRScannerView onBack={onBack} />}
+              {view === 'student-qr' && <StudentQRView onBack={onBack} students={students} />}
               {view === 'schedule' && <TeachingScheduleView onBack={onBack} />}
               {view === 'parent-comm' && <ParentCommunicationView onBack={onBack} />}
               {view === 'classroom-mgmt' && <ClassroomManagementView onBack={onBack} students={students} />}
@@ -434,6 +436,7 @@ function Dashboard({ setView, atRiskCount }: { setView: (view: string) => void, 
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
           <MenuCard title="បញ្ជីឈ្មោះសិស្ស" icon={<Users />} color="indigo" onClick={() => setView('student-management')} />
+          <MenuCard title="QR សិស្ស" icon={<QrCode />} color="purple" onClick={() => setView('student-qr')} />
           <MenuCard title="វត្តមានស្កេន (QR)" icon={<QrCode />} color="emerald" onClick={() => setView('qr-scanner')} />
           <MenuCard title="គ្រប់គ្រងថ្នាក់រៀន" icon={<School />} color="sky" onClick={() => setView('classroom-mgmt')} />
           <MenuCard title="ប្លង់ថ្នាក់រៀន" icon={<Grid3X3 />} color="teal" onClick={() => setView('seating-chart')} />

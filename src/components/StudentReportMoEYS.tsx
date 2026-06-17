@@ -221,12 +221,17 @@ export default function StudentReportMoEYS({ students, classInfo, onBack }: Stud
               {/* Right Column */}
               <div className="w-[380px] flex flex-col pt-2">
                  <div className="text-center space-y-2 mb-8 text-[#1a3a8f]">
-                    <p>ថ្ងៃពុធ ១៤រោច ខែកត្តិក ឆ្នាំថោះ បញ្ចស័ក ព.ស. ២៥៦៧</p>
                     <p>
-                      ធ្វើនៅ <span contentEditable suppressContentEditableWarning className="font-bold outline-none px-2 text-[#1a3a8f]">ពោធិ៍ជ្រៃ</span> 
-                      ថ្ងៃទី <span contentEditable suppressContentEditableWarning className="font-bold outline-none px-1 text-[#1a3a8f]">១១</span> 
-                      ខែ <span contentEditable suppressContentEditableWarning className="font-bold outline-none px-1 text-[#1a3a8f]">ធ្នូ</span> 
-                      ឆ្នាំ<span contentEditable suppressContentEditableWarning className="font-bold outline-none text-[#1a3a8f]">២០២៣</span>
+                      ថ្ងៃ <span contentEditable suppressContentEditableWarning className="font-bold outline-none border-b border-dotted border-slate-300 min-w-[40px] inline-block"></span> 
+                      ខែ <span contentEditable suppressContentEditableWarning className="font-bold outline-none border-b border-dotted border-slate-300 min-w-[60px] inline-block"></span> 
+                      ឆ្នាំ <span contentEditable suppressContentEditableWarning className="font-bold outline-none border-b border-dotted border-slate-300 min-w-[60px] inline-block"></span> 
+                      ព.ស. ២៥<span contentEditable suppressContentEditableWarning className="font-bold outline-none border-b border-dotted border-slate-300 min-w-[30px] inline-block"></span>
+                    </p>
+                    <p>
+                      ធ្វើនៅ <span contentEditable suppressContentEditableWarning className="font-bold outline-none px-2 text-[#1a3a8f] border-b border-dotted border-slate-300 min-w-[60px] inline-block"></span> 
+                      ថ្ងៃទី <span contentEditable suppressContentEditableWarning className="font-bold outline-none px-1 text-[#1a3a8f] border-b border-dotted border-slate-300 min-w-[30px] inline-block"></span> 
+                      ខែ <span contentEditable suppressContentEditableWarning className="font-bold outline-none px-1 text-[#1a3a8f] border-b border-dotted border-slate-300 min-w-[50px] inline-block"></span> 
+                      ឆ្នាំ <span contentEditable suppressContentEditableWarning className="font-bold outline-none text-[#1a3a8f] border-b border-dotted border-slate-300 min-w-[50px] inline-block"></span>
                     </p>
                  </div>
                  
@@ -240,7 +245,7 @@ export default function StudentReportMoEYS({ students, classInfo, onBack }: Stud
                     </div>
                     <div className="flex-1 space-y-16 mt-5">
                       <p>គ្រូប្រចាំថ្នាក់</p>
-                      <p className="text-[#cc0000]">{classInfo.teacherName || 'លោកគ្រូ អ៊ុំ សុភត្រា'}</p>
+                      <p className="text-[#cc0000]"><span contentEditable suppressContentEditableWarning className="outline-none border-b border-dotted border-[#cc0000] min-w-[150px] inline-block">{classInfo.teacherName || ''}</span></p>
                     </div>
                  </div>
               </div>
