@@ -19,7 +19,10 @@ import {
   RotateCw,
   Save,
   Printer,
-  MessageCircle
+  MessageCircle,
+  HelpCircle,
+  CheckCircle2,
+  XCircle
 } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
@@ -30,7 +33,7 @@ interface ClassroomToolsViewProps {
 }
 
 export default function ClassroomToolsView({ onBack }: ClassroomToolsViewProps) {
-  const [activeTool, setActiveTool] = useState<'picker' | 'timer' | 'groups' | 'seating' | 'commission' | 'questions'>('picker');
+  const [activeTool, setActiveTool] = useState<'picker' | 'timer' | 'groups' | 'seating' | 'commission' | 'questions' | 'quiz'>('picker');
   const [students, setStudents] = useState<Student[]>([]);
 
   useEffect(() => {
@@ -55,9 +58,9 @@ export default function ClassroomToolsView({ onBack }: ClassroomToolsViewProps) 
           <ToolTab active={activeTool === 'picker'} onClick={() => setActiveTool('picker')} icon={<Users className="w-4 h-4" />} label="រើសសិស្ស" />
           <ToolTab active={activeTool === 'timer'} onClick={() => setActiveTool('timer')} icon={<Timer className="w-4 h-4" />} label="នាឡិកា" />
           <ToolTab active={activeTool === 'groups'} onClick={() => setActiveTool('groups')} icon={<Shuffle className="w-4 h-4" />} label="ក្រុម" />
-          <ToolTab active={activeTool === 'seating'} onClick={() => setActiveTool('seating')} icon={<Layout className="w-4 h-4" />} label="ប្លង់តុ" />
           <ToolTab active={activeTool === 'commission'} onClick={() => setActiveTool('commission')} icon={<ShieldCheck className="w-4 h-4" />} label="គណៈកម្មការ" />
           <ToolTab active={activeTool === 'questions'} onClick={() => setActiveTool('questions')} icon={<MessageCircle className="w-4 h-4" />} label="បច្ចេកទេសសួរ" />
+          <ToolTab active={activeTool === 'quiz'} onClick={() => setActiveTool('quiz')} icon={<HelpCircle className="w-4 h-4" />} label="កម្រងសំណួរកម្រិតពុទ្ធិ" />
         </div>
       </div>
 
@@ -71,9 +74,9 @@ export default function ClassroomToolsView({ onBack }: ClassroomToolsViewProps) 
           {activeTool === 'picker' && <RandomPicker key="picker" students={students} />}
           {activeTool === 'timer' && <ClassTimer key="timer" />}
           {activeTool === 'groups' && <GroupGenerator key="groups" students={students} />}
-          {activeTool === 'seating' && <SeatingChart key="seating" students={students} />}
           {activeTool === 'commission' && <ChildrenCommission key="commission" students={students} />}
           {activeTool === 'questions' && <QuestioningTechniques key="questions" />}
+          {activeTool === 'quiz' && <BloomQuiz key="quiz" />}
         </AnimatePresence>
       </div>
     </div>
@@ -237,75 +240,6 @@ function GroupGenerator({ students }: { students: Student[] }) {
   );
 }
 
-function SeatingChart({ students }: { students: Student[] }) {
-  const [columns, setColumns] = useState(3);
-  const [rows, setRows] = useState(4);
-  const [seating, setSeating] = useState<Record<string, string>>({});
-
-  const generateSeating = () => {
-    const shuffled = [...students].sort(() => Math.random() - 0.5);
-    const newSeating: Record<string, string> = {};
-    shuffled.forEach((s, i) => {
-      newSeating[`${Math.floor(i / columns)}-${i % columns}`] = s.name;
-    });
-    setSeating(newSeating);
-  };
-
-  return (
-    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-white p-12 rounded-[4rem] shadow-2xl border border-slate-100">
-      <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12 border-b border-slate-50 pb-10">
-        <div className="space-y-2">
-          <h3 className="text-4xl font-black text-slate-800 font-khmer tracking-tight">ប្លង់តុអង្គុយសិស្ស</h3>
-          <p className="text-slate-400 font-bold font-khmer flex items-center gap-2">
-            <Layout className="w-4 h-4" /> រៀបចំទីតាំងអង្គុយតាមជួរឈរ និងជួរដេក
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-4 items-center">
-           <div className="flex items-center gap-4 bg-slate-50 px-6 py-3 rounded-2xl border border-slate-100">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-khmer">ជួរឈរ:</span>
-              <input type="number" value={columns} onChange={(e) => setColumns(Number(e.target.value))} className="w-10 bg-transparent font-black text-slate-800 outline-none text-xl" />
-           </div>
-           <button onClick={generateSeating} className="bg-indigo-600 text-white px-10 py-4 rounded-[1.5rem] font-black font-khmer flex items-center gap-3 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100">
-              <RefreshCw className="w-5 h-5" /> រៀបថ្មី
-           </button>
-           <button className="p-4 bg-slate-900 text-white rounded-2xl hover:bg-black transition-all shadow-lg"><Printer className="w-6 h-6" /></button>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center justify-center p-16 bg-slate-50/50 rounded-[3.5rem] border border-slate-100 border-dashed relative">
-         <div className="w-72 h-10 bg-slate-800 rounded-full mb-24 flex items-center justify-center shadow-2xl border-4 border-slate-700">
-            <span className="text-[9px] text-white font-black uppercase tracking-[0.6em]">តុគ្រូបង្រៀន / ក្ដារខៀន</span>
-         </div>
-         
-         <div className="grid gap-16" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
-            {Array.from({ length: rows * columns }).map((_, i) => {
-              const r = Math.floor(i / columns);
-              const c = i % columns;
-              const name = seating[`${r}-${c}`];
-              return (
-                <div key={i} className={`w-36 h-28 rounded-3xl border-4 flex flex-col items-center justify-center gap-3 transition-all relative ${
-                  name ? 'bg-white border-indigo-100 shadow-2xl scale-110' : 'bg-slate-100/50 border-slate-100 border-dashed scale-100'
-                }`}>
-                   {name ? (
-                     <>
-                       <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center font-black text-xs text-white shadow-xl shadow-indigo-100">
-                         {name.charAt(0)}
-                       </div>
-                       <span className="text-xs font-black font-khmer text-slate-800">{name}</span>
-                       <div className="absolute -top-3 -right-3 w-8 h-8 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-xl border-2 border-white"><ShieldCheck className="w-4 h-4" /></div>
-                     </>
-                   ) : (
-                     <div className="w-6 h-6 rounded-full border-2 border-slate-200"></div>
-                   )}
-                </div>
-              );
-            })}
-         </div>
-      </div>
-    </motion.div>
-  );
-}
-
 function ChildrenCommission({ students }: { students: Student[] }) {
   const roles = [
     { id: 'leader', title: 'ប្រធានថ្នាក់', icon: <Award className="w-6 h-6 text-amber-500" />, color: 'from-amber-500 to-orange-600' },
@@ -373,6 +307,154 @@ function QuestioningTechniques() {
               </div>
             ))}
          </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function BloomQuiz() {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [score, setScore] = useState(0);
+  const [showResults, setShowResults] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+
+  const quizData = [
+    {
+      level: '១. ចងចាំ (Remembering)',
+      question: 'តើការបូកលេខ ២ និង ៣ មានលទ្ធផលប៉ុន្មាន?',
+      options: ['៤', '៥', '៦', '៧'],
+      correct: 1,
+      color: 'bg-emerald-500'
+    },
+    {
+      level: '២. យល់ដឹង (Understanding)',
+      question: 'តើឃ្លាថា "មេឃពណ៌ខៀវ" មានន័យយ៉ាងដូចម្តេច?',
+      options: ['មេឃកំពុងភ្លៀង', 'មេឃស្រឡះល្អ', 'មេឃងងឹត', 'មេឃមានផ្កាយច្រើន'],
+      correct: 1,
+      color: 'bg-teal-500'
+    },
+    {
+      level: '៣. អនុវត្ត (Applying)',
+      question: 'ប្រសិនបើអ្នកមានផ្លែប៉ោម ៣ ហើយមានមិត្ត ២នាក់សុំម្នាក់១ តើអ្នកសល់ប៉ោមប៉ុន្មាន?',
+      options: ['១', '២', '៣', '០'],
+      correct: 0,
+      color: 'bg-blue-500'
+    },
+    {
+      level: '៤. វិភាគ (Analyzing)',
+      question: 'ហេតុអ្វីបានជារុក្ខជាតិត្រូវការកម្តៅថ្ងៃដើម្បីលូតលាស់? សូមគិតពីយន្តការរស្មីសំយោគ។',
+      options: ['ដើម្បីការពារខ្លួនពីសត្វល្អិត', 'ដើម្បីផលិតអាហារតាមរយៈរស្មីសំយោគ', 'ដើម្បីស្រូបយកកាបូនឌីអុកស៊ីត', 'ដើម្បីឱ្យវាមានស្លឹកពណ៌បៃតង'],
+      correct: 1,
+      color: 'bg-indigo-500'
+    },
+    {
+      level: '៥. វាយតម្លៃ (Evaluating)',
+      question: 'តើការប្រើប្រាស់ប្លាស្ទិកហួសកម្រិតមានផលប៉ះពាល់អ្វីខ្លះដល់បរិស្ថាន? តើអ្នកគាំទ្រឬទេ?',
+      options: ['មិនមានផលប៉ះពាល់ទេ', 'ធ្វើឱ្យបរិស្ថានស្អាត', 'បង្កការបំពុល និងប៉ះពាល់ដល់សត្វ', 'ជួយកាត់បន្ថយការប្រើប្រាស់ក្រដាស'],
+      correct: 2,
+      color: 'bg-purple-500'
+    },
+    {
+      level: '៦. បង្កើត (Creating)',
+      question: 'តើអ្នកអាចបង្កើតយុទ្ធសាស្ត្រអ្វីខ្លះដើម្បីកាត់បន្ថយប្លាស្ទិកនៅក្នុងសាលារៀនរបស់អ្នក?',
+      options: ['ទិញទឹកសុទ្ធដបប្លាស្ទិកបន្ថែម', 'រៀបចំយុទ្ធនាការកែច្នៃ និងប្រើដបផ្ទាល់ខ្លួន', 'ដុតសំរាមប្លាស្ទិកក្នុងសាលា', 'ចោលសំរាមចូលក្នុងទន្លេ'],
+      correct: 1,
+      color: 'bg-rose-500'
+    }
+  ];
+
+  const handleAnswer = (index: number) => {
+    setSelectedAnswer(index);
+    if (index === quizData[currentQuestion].correct) {
+      setScore(score + 1);
+    }
+    
+    setTimeout(() => {
+      setSelectedAnswer(null);
+      if (currentQuestion < quizData.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+      } else {
+        setShowResults(true);
+      }
+    }, 1500);
+  };
+
+  const resetQuiz = () => {
+    setCurrentQuestion(0);
+    setScore(0);
+    setShowResults(false);
+    setSelectedAnswer(null);
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-4xl mx-auto">
+      <div className="bg-white p-6 sm:p-12 rounded-[2rem] sm:rounded-[3.5rem] shadow-2xl border border-slate-100 min-h-[400px] sm:min-h-[500px] flex flex-col">
+        {!showResults ? (
+           <>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
+               <div>
+                 <span className={`px-4 py-1.5 rounded-full text-white font-bold text-xs ${quizData[currentQuestion].color}`}>
+                   {quizData[currentQuestion].level}
+                 </span>
+                 <p className="text-slate-400 font-bold font-mono mt-3">សំណួរទី {currentQuestion + 1} នៃ {quizData.length}</p>
+               </div>
+               <div className="flex flex-wrap gap-2">
+                 {quizData.map((_, idx) => (
+                   <div key={idx} className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${idx === currentQuestion ? 'bg-indigo-600' : idx < currentQuestion ? 'bg-indigo-200' : 'bg-slate-100'}`} />
+                 ))}
+               </div>
+            </div>
+
+            <h3 className="text-xl sm:text-3xl font-black text-slate-800 font-khmer mb-8 sm:mb-10 leading-relaxed">
+              {quizData[currentQuestion].question}
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mt-auto">
+              {quizData[currentQuestion].options.map((option, idx) => {
+                let btnStyle = 'bg-slate-50 border-slate-100 text-slate-700 hover:border-indigo-200 hover:bg-slate-100';
+                let icon = null;
+                
+                if (selectedAnswer !== null) {
+                   if (idx === quizData[currentQuestion].correct) {
+                     btnStyle = 'bg-emerald-50 border-emerald-500 text-emerald-700';
+                     icon = <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500 shrink-0" />;
+                   } else if (idx === selectedAnswer) {
+                     btnStyle = 'bg-rose-50 border-rose-500 text-rose-700';
+                     icon = <XCircle className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500 shrink-0" />;
+                   } else {
+                     btnStyle = 'bg-slate-50 border-slate-100 text-slate-400 opacity-50';
+                   }
+                }
+
+                return (
+                  <button
+                    key={idx}
+                    disabled={selectedAnswer !== null}
+                    onClick={() => handleAnswer(idx)}
+                    className={`p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-2 flex items-center justify-between gap-3 transition-all text-left group ${btnStyle}`}
+                  >
+                    <span className="font-bold font-khmer text-base sm:text-lg">{option}</span>
+                    {icon}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center text-center py-6 sm:py-10 flex-1">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 bg-indigo-100 rounded-[2rem] sm:rounded-[3rem] flex items-center justify-center mb-6 sm:mb-8 rotate-12">
+               <Award className="w-12 h-12 sm:w-16 sm:h-16 text-indigo-600 -rotate-12" />
+            </div>
+            <h3 className="text-2xl sm:text-4xl font-black text-slate-800 font-khmer mb-3 sm:mb-4">លទ្ធផលរបស់អ្នក</h3>
+            <p className="text-lg sm:text-2xl text-slate-500 font-bold mb-8 sm:mb-10">អ្នកឆ្លើយត្រូវ <span className="text-indigo-600 font-black text-3xl sm:text-4xl">{score}/{quizData.length}</span> សំណួរ</p>
+            <button 
+              onClick={resetQuiz}
+              className="bg-slate-900 text-white px-8 sm:px-10 py-3 sm:py-4 rounded-xl sm:rounded-[2rem] font-black font-khmer text-base sm:text-lg flex items-center gap-2 sm:gap-3 hover:bg-slate-800 transition-all shadow-xl"
+            >
+              <RotateCw className="w-4 h-4 sm:w-5 sm:h-5" /> ធ្វើម្តងទៀត
+            </button>
+          </div>
+        )}
       </div>
     </motion.div>
   );

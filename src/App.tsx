@@ -411,18 +411,20 @@ function Dashboard({ setView, atRiskCount }: { setView: (view: string) => void, 
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-red-50 border border-red-200 rounded-[2rem] p-6 flex items-start sm:items-center gap-4 sm:gap-6"
+          className="bg-red-50 border border-red-200 rounded-[2rem] p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 text-left"
         >
-          <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-            <AlertTriangle className="w-6 h-6 text-red-600" />
-          </div>
-          <div className="flex-grow">
-            <h3 className="text-red-800 font-bold font-kantumruy text-lg">មានសិស្សប្រឈមចំនួន {atRiskCount} នាក់</h3>
-            <p className="text-red-600 text-sm mt-1">សិស្សទាមទារការយកចិត្តទុកដាក់ និងជំនួយបន្ថែមជាបន្ទាន់។</p>
+          <div className="flex gap-4 items-center w-full">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+              <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" />
+            </div>
+            <div className="flex-grow">
+              <h3 className="text-red-800 font-bold font-kantumruy text-base sm:text-lg leading-snug">មានសិស្សប្រឈមចំនួន {atRiskCount} នាក់</h3>
+              <p className="text-red-600 text-xs sm:text-sm mt-1 sm:mt-0">សិស្សទាមទារការយកចិត្តទុកដាក់ និងជំនួយបន្ថែមជាបន្ទាន់។</p>
+            </div>
           </div>
           <button 
             onClick={() => setView('at-risk-warning')}
-            className="px-6 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-colors shrink-0 whitespace-nowrap"
+            className="px-6 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-colors shrink-0 w-full sm:w-auto text-sm sm:text-base mt-2 sm:mt-0 whitespace-nowrap"
           >
             ពិនិត្យមើល
           </button>
@@ -430,11 +432,11 @@ function Dashboard({ setView, atRiskCount }: { setView: (view: string) => void, 
       )}
 
       {/* 1. Class & Student Management */}
-      <section className="bg-indigo-50/50 border border-indigo-100/50 rounded-[2rem] p-6 lg:p-8 relative overflow-hidden">
-        <h2 className="text-lg md:text-xl font-bold mb-5 text-slate-800 flex items-center gap-3 font-kantumruy tracking-tight">
-          <Users className="w-6 h-6 md:w-7 md:h-7 text-indigo-600" /> ១. ផ្នែកគ្រប់គ្រងថ្នាក់រៀន និងសិស្ស
+      <section className="bg-indigo-50/50 border border-indigo-100/50 rounded-[2rem] p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+        <h2 className="text-lg md:text-xl font-bold mb-4 sm:mb-5 text-slate-800 flex items-center gap-3 font-kantumruy tracking-tight">
+          <Users className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-indigo-600" /> ១. ផ្នែកគ្រប់គ្រងថ្នាក់រៀន និងសិស្ស
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5">
           <MenuCard title="បញ្ជីឈ្មោះសិស្ស" icon={<Users />} color="indigo" onClick={() => setView('student-management')} />
           <MenuCard title="QR សិស្ស" icon={<QrCode />} color="purple" onClick={() => setView('student-qr')} />
           <MenuCard title="វត្តមានស្កេន (QR)" icon={<QrCode />} color="emerald" onClick={() => setView('qr-scanner')} />
@@ -445,11 +447,11 @@ function Dashboard({ setView, atRiskCount }: { setView: (view: string) => void, 
       </section>
 
       {/* 2. Instructional Planning & Tools */}
-      <section className="bg-amber-50/50 border border-amber-100/50 rounded-[2rem] p-6 lg:p-8 relative overflow-hidden">
-        <h2 className="text-lg md:text-xl font-bold mb-5 text-slate-800 flex items-center gap-3 font-kantumruy tracking-tight">
-          <BookText className="w-6 h-6 md:w-7 md:h-7 text-amber-600" /> ២. ផ្នែកផែនការ និងការបង្រៀនប្រចាំថ្ងៃ
+      <section className="bg-amber-50/50 border border-amber-100/50 rounded-[2rem] p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+        <h2 className="text-lg md:text-xl font-bold mb-4 sm:mb-5 text-slate-800 flex items-center gap-3 font-kantumruy tracking-tight">
+          <BookText className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-amber-600" /> ២. ផ្នែកផែនការ និងការបង្រៀនប្រចាំថ្ងៃ
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5">
           <MenuCard title="បង្កើតកិច្ចតែងការ" icon={<BookText />} color="amber" onClick={() => setView('lesson-plan')} />
           <MenuCard title="ជំនួយការគ្រូ AI" icon={<Sparkles />} color="violet" onClick={() => setView('classroom-tools')} />
           <MenuCard title="កាលវិភាគបង្រៀន" icon={<Calendar />} color="cyan" onClick={() => setView('schedule')} />
@@ -459,11 +461,11 @@ function Dashboard({ setView, atRiskCount }: { setView: (view: string) => void, 
       </section>
 
       {/* 3. Assessment & Analytics */}
-      <section className="bg-sky-50/50 border border-sky-100/50 rounded-[2rem] p-6 lg:p-8 relative overflow-hidden">
-        <h2 className="text-lg md:text-xl font-bold mb-5 text-slate-800 flex items-center gap-3 font-kantumruy tracking-tight">
-          <BarChart3 className="w-6 h-6 md:w-7 md:h-7 text-sky-600" /> ៣. ផ្នែកវាយតម្លៃ និងលទ្ធផលសិក្សា
+      <section className="bg-sky-50/50 border border-sky-100/50 rounded-[2rem] p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+        <h2 className="text-lg md:text-xl font-bold mb-4 sm:mb-5 text-slate-800 flex items-center gap-3 font-kantumruy tracking-tight">
+          <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-sky-600" /> ៣. ផ្នែកវាយតម្លៃ និងលទ្ធផលសិក្សា
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5">
           <MenuCard title="តារាងសម្រង់ពិន្ទុ" icon={<FileSpreadsheet />} color="blue" onClick={() => setView('grade-summary')} />
           <MenuCard title="វិភាគពិន្ទុសិស្ស" icon={<BarChart3 />} color="orange" onClick={() => setView('score-analysis')} />
           <MenuCard title="សៀវភៅតាមដាន" icon={<ClipboardList />} color="lime" onClick={() => setView('daily-logs')} />
@@ -473,11 +475,11 @@ function Dashboard({ setView, atRiskCount }: { setView: (view: string) => void, 
       </section>
 
       {/* 4. Learning Resources & Intervention */}
-      <section className="bg-violet-50/50 border border-violet-100/50 rounded-[2rem] p-6 lg:p-8 relative overflow-hidden">
-        <h2 className="text-lg md:text-xl font-bold mb-5 text-slate-800 flex items-center gap-3 font-kantumruy tracking-tight">
-          <Library className="w-6 h-6 md:w-7 md:h-7 text-violet-600" /> ៤. ផ្នែកធនធានសិក្សា និងកញ្ចប់គាំទ្រ
+      <section className="bg-violet-50/50 border border-violet-100/50 rounded-[2rem] p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+        <h2 className="text-lg md:text-xl font-bold mb-4 sm:mb-5 text-slate-800 flex items-center gap-3 font-kantumruy tracking-tight">
+          <Library className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-violet-600" /> ៤. ផ្នែកធនធានសិក្សា និងកញ្ចប់គាំទ្រ
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5">
           <MenuCard title="បណ្ណាល័យឌីជីថល" icon={<BookOpen />} color="rose" onClick={() => setView('library')} />
           <MenuCard title="កញ្ចប់អំណាន" icon={<Book />} color="red" onClick={() => setView('egr-package')} />
           <MenuCard title="កញ្ចប់គណិតវិទ្យា" icon={<Calculator />} color="zinc" onClick={() => setView('egr-math')} />
@@ -489,11 +491,11 @@ function Dashboard({ setView, atRiskCount }: { setView: (view: string) => void, 
       </section>
       
       {/* 5. Administration & Logistics */}
-      <section className="bg-slate-100 border border-slate-200/50 rounded-[2rem] p-6 lg:p-8 relative overflow-hidden">
-        <h2 className="text-lg md:text-xl font-bold mb-5 text-slate-800 flex items-center gap-3 font-kantumruy tracking-tight">
-          <FileText className="w-6 h-6 md:w-7 md:h-7 text-slate-600" /> ៥. ផ្នែករដ្ឋបាល ភស្តុភារ និងសុវត្ថិភាព
+      <section className="bg-slate-100 border border-slate-200/50 rounded-[2rem] p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+        <h2 className="text-lg md:text-xl font-bold mb-4 sm:mb-5 text-slate-800 flex items-center gap-3 font-kantumruy tracking-tight">
+          <FileText className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-slate-600" /> ៥. ផ្នែករដ្ឋបាល ភស្តុភារ និងសុវត្ថិភាព
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5">
           <MenuCard title="រដ្ឋបាល & ឯកសារ" icon={<FileText />} color="indigo2" onClick={() => setView('administration')} />
           <MenuCard title="គណនីគ្រូ (បញ្ជាក់អត្តសញ្ញាណ)" icon={<KeyRound />} color="cyan2" onClick={() => setView('teacher-accounts')} />
           <MenuCard title="សារពើភ័ណ្ឌ & ខ្ចីសង" icon={<Package />} color="sky2" onClick={() => setView('inventory')} />
@@ -502,11 +504,11 @@ function Dashboard({ setView, atRiskCount }: { setView: (view: string) => void, 
       </section>
 
       {/* 6. Professional Development */}
-      <section className="bg-teal-50/50 border border-teal-100/50 rounded-[2rem] p-6 lg:p-8 relative overflow-hidden">
-        <h2 className="text-lg md:text-xl font-bold mb-5 text-slate-800 flex items-center gap-3 font-kantumruy tracking-tight">
-          <Briefcase className="w-6 h-6 md:w-7 md:h-7 text-teal-600" /> ៦. ផ្នែកអភិវឌ្ឍន៍វិជ្ជាជីវៈ
+      <section className="bg-teal-50/50 border border-teal-100/50 rounded-[2rem] p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+        <h2 className="text-lg md:text-xl font-bold mb-4 sm:mb-5 text-slate-800 flex items-center gap-3 font-kantumruy tracking-tight">
+          <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-teal-600" /> ៦. ផ្នែកអភិវឌ្ឍន៍វិជ្ជាជីវៈ
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5">
           <MenuCard title="អភិវឌ្ឍន៍វិជ្ជាជីវៈ" icon={<Briefcase />} color="emerald2" onClick={() => setView('teacher-dev')} />
         </div>
       </section>
@@ -553,16 +555,16 @@ function MenuCard({ title, icon, color, onClick }: { title: string, icon: React.
       whileHover={{ y: -4, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`border border-transparent ${bg} ${hoverBorder} shadow-sm hover:shadow-lg ${hoverShadow} relative group p-5 rounded-3xl flex flex-col items-start justify-between text-left gap-4 transition-all duration-300 cursor-pointer overflow-hidden aspect-[4/3] sm:aspect-auto sm:h-36 w-full`}
+      className={`border border-transparent ${bg} ${hoverBorder} shadow-sm hover:shadow-lg ${hoverShadow} relative group p-4 sm:p-5 rounded-2xl sm:rounded-3xl flex flex-col items-start justify-between text-left gap-3 sm:gap-4 transition-all duration-300 cursor-pointer overflow-hidden aspect-[4/3] sm:aspect-auto sm:h-36 w-full`}
     >
-      <div className={`w-12 h-12 rounded-[1rem] flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${iconBg} ${iconColor} shadow-sm`}>
+      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${iconBg} ${iconColor} shadow-sm`}>
         {React.cloneElement(icon as React.ReactElement<{ className?: string }>, { 
-          className: "w-6 h-6 stroke-[2px]" 
+          className: "w-5 h-5 sm:w-6 sm:h-6 stroke-[2px]" 
         })}
       </div>
 
       <div className="w-full">
-        <h3 className={`text-sm font-black ${text} font-kantumruy leading-snug line-clamp-2 transition-colors duration-300`}>
+        <h3 className={`text-xs sm:text-sm font-black ${text} font-kantumruy leading-snug line-clamp-2 transition-colors duration-300`}>
           {title}
         </h3>
       </div>

@@ -58,16 +58,16 @@ export default function AppHeader({ onLogout }: { onLogout?: () => void }) {
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-2 md:px-10 flex items-center justify-between gap-4">
           
           {/* Left: Logo & Titles */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-3 sm:gap-8">
             <div className="relative flex items-center justify-center">
               {/* Ornamental rings behind logo */}
-              <div className="absolute w-[80px] h-[80px] border-[0.5px] border-emerald-400/20 rounded-full animate-pulse" />
-              <div className="absolute w-[65px] h-[65px] border-[0.5px] border-emerald-400/10 rounded-full" />
+              <div className="absolute w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] border-[0.5px] border-emerald-400/20 rounded-full animate-pulse" />
+              <div className="absolute w-[50px] h-[50px] sm:w-[65px] sm:h-[65px] border-[0.5px] border-emerald-400/10 rounded-full" />
               
               {/* Premium Official-style Logo */}
               <motion.div 
                 whileHover={{ scale: 1.05 }}
-                className="relative w-16 h-16 bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-900 rounded-2xl flex flex-col items-center justify-center shadow-[0_10px_30px_rgba(16,185,129,0.3)] border-2 border-emerald-400/40 overflow-hidden group"
+                className="relative w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-900 rounded-xl md:rounded-2xl flex flex-col items-center justify-center shadow-[0_10px_30px_rgba(16,185,129,0.3)] border-2 border-emerald-400/40 overflow-hidden group"
               >
                 {/* Glossy Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
@@ -103,13 +103,13 @@ export default function AppHeader({ onLogout }: { onLogout?: () => void }) {
             </div>
             
             {/* Modern Vertical Separator */}
-            <div className="h-10 w-[2px] bg-gradient-to-b from-transparent via-emerald-500/40 to-transparent mx-2 rounded-full" />
+            <div className="hidden sm:block h-10 w-[2px] bg-gradient-to-b from-transparent via-emerald-500/40 to-transparent mx-2 rounded-full" />
 
             <div className="flex flex-col py-1">
-              <h1 className="text-lg md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-emerald-200 font-kantumruy leading-tight tracking-tight drop-shadow-sm filter contrast-125">
+              <h1 className="text-base sm:text-lg md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-emerald-200 font-kantumruy leading-tight tracking-tight drop-shadow-sm filter contrast-125">
                 គ្រូបង្រៀនឌីជីថល
               </h1>
-              <p className="text-emerald-400 font-bold text-[7px] md:text-[9px] tracking-[0.4em] uppercase font-sans mt-0.5 opacity-80 flex items-center gap-2">
+              <p className="hidden sm:flex text-emerald-400 font-bold text-[7px] md:text-[9px] tracking-[0.4em] uppercase font-sans mt-0.5 opacity-80 items-center gap-2">
                 <span className="w-4 h-[1px] bg-emerald-500/50"></span>
                 Khmer Primary Education
                 <span className="w-4 h-[1px] bg-emerald-500/50"></span>
@@ -118,7 +118,7 @@ export default function AppHeader({ onLogout }: { onLogout?: () => void }) {
           </div>
 
           {/* Right: Search & Profile & Backup Status */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-3 sm:gap-8">
 
 
             {/* Dark Search Bar */}
