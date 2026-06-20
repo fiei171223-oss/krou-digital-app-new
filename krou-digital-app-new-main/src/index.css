@@ -3,10 +3,10 @@
 @config "../tailwind.config.js";
 
 @theme {
-  --font-sans: "Kh Rayuth HD 73", "Siemreap", "Kantumruy Pro", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-khmer: "Kh Rayuth HD 73", "Siemreap", "Kantumruy Pro", "Khmer", serif;
-  --font-moul: "Kh Rayuth HD 73", "Moul", serif;
-  --font-kantumruy: "Kh Rayuth HD 73", "Kantumruy Pro", sans-serif;
+  --font-sans: "Siemreap", "Kantumruy Pro", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-khmer: "Siemreap", "Kantumruy Pro", "Khmer", serif;
+  --font-moul: "Moul", serif;
+  --font-kantumruy: "Kantumruy Pro", sans-serif;
 
   --animate-pulse-slow: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   
@@ -127,19 +127,19 @@ body {
 }
 
 .khmer-font {
-  font-family: "Kh Rayuth HD 73", "Siemreap", "Kantumruy Pro", "Khmer", serif;
+  font-family: "Siemreap", "Kantumruy Pro", "Khmer", serif;
 }
 
 .khmer-muol {
-  font-family: "Kh Rayuth HD 73", "Moul", "Khmer OS Muol Light", serif;
+  font-family: "Moul", "Khmer OS Muol Light", serif;
 }
 
 .khmer-battambang {
-  font-family: "Kh Rayuth HD 73", "Siemreap", "Khmer OS Battambang", sans-serif;
+  font-family: "Siemreap", "Khmer OS Battambang", sans-serif;
 }
 
 .font-kantumruy {
-  font-family: "Kh Rayuth HD 73", "Kantumruy Pro", sans-serif;
+  font-family: "Kantumruy Pro", sans-serif;
 }
 
 @utility mesh-bg {

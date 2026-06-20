@@ -371,28 +371,21 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
               <h2 className="text-xl font-black font-kantumruy text-slate-800 text-center mb-4">ចូលគណនីគ្រូ</h2>
 
               {/* Teacher Avatar Upload */}
-              <div className="relative w-24 h-24 mb-4 mx-auto">
-                <div className={`w-24 h-24 relative rounded-full ${schoolName === 'សាលាបឋមសិក្សាព្រែកទាល់' ? 'ring-4 ring-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.7)]' : ''}`}>
-                  {teacherAvatar ? (
-                    <img src={teacherAvatar} alt="Teacher" className="w-full h-full rounded-full object-cover shadow-lg border-4 border-white" />
-                  ) : (
-                    <div className="w-full h-full bg-indigo-50 rounded-full flex flex-col items-center justify-center shadow-inner border-2 border-dashed border-indigo-300 hover:bg-indigo-100 transition-colors cursor-pointer overflow-hidden relative group border-white">
-                      <User className="w-8 h-8 text-indigo-400 mb-1 group-hover:scale-110 transition-transform" />
-                      <span className="text-[10px] text-indigo-600 font-bold whitespace-nowrap">ដាក់រូបថត</span>
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        onChange={handleTeacherAvatarUpload}
-                        className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                      />
-                    </div>
-                  )}
-                  {schoolName === 'សាលាបឋមសិក្សាព្រែកទាល់' && (
-                    <div className="absolute bottom-0 right-0 bg-blue-500 rounded-full border-2 border-white shadow-md z-20" title="ប្រើឥតដែនកំណត់">
-                      <CheckCircle2 className="w-5 h-5 text-white" />
-                    </div>
-                  )}
-                </div>
+              <div className="relative w-24 h-24 mb-2 mx-auto">
+                {teacherAvatar ? (
+                  <img src={teacherAvatar} alt="Teacher" className="w-24 h-24 rounded-full object-cover shadow-lg border-4 border-indigo-100" />
+                ) : (
+                  <div className="w-24 h-24 bg-indigo-50 rounded-full flex flex-col items-center justify-center shadow-inner border-2 border-dashed border-indigo-300 hover:bg-indigo-100 transition-colors cursor-pointer overflow-hidden relative group">
+                    <User className="w-8 h-8 text-indigo-400 mb-1 group-hover:scale-110 transition-transform" />
+                    <span className="text-[10px] text-indigo-600 font-bold whitespace-nowrap">ដាក់រូបថត</span>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleTeacherAvatarUpload}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+                  </div>
+                )}
               </div>
 
               <div>
