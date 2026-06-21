@@ -350,15 +350,6 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      {/* Floating Help Button */}
-      <button
-        onClick={() => setShowGuide(true)}
-        className="fixed bottom-6 right-6 z-50 p-4 bg-indigo-600 text-white rounded-full shadow-xl hover:bg-indigo-700 hover:scale-110 active:scale-95 transition-all flex items-center justify-center border-4 border-white print:hidden"
-        title="របៀបប្រើប្រាស់"
-      >
-        <HelpCircle className="w-7 h-7" />
-      </button>
-
       {/* Instruction Guide Modal */}
       <InstructionGuideModal 
         isOpen={showGuide} 

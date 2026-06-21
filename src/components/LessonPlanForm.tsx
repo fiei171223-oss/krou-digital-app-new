@@ -12,9 +12,17 @@ import {
   AlertCircle,
   Target,
   Layers,
-  FileDown
+  FileDown,
+  Lightbulb,
+  Presentation
 } from 'lucide-react';
 import { LessonPlan, Grade, StepContent } from '../types';
+import TeachingGlossaryModal from './TeachingGlossaryModal';
+import WorksheetModal from './WorksheetModal';
+import SlideGeneratorModal from './SlideGeneratorModal';
+import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, BorderStyle, WidthType } from 'docx';
+import { saveAs } from 'file-saver';
+
 interface LessonPlanFormProps {
   onBack: () => void;
 }
@@ -102,9 +110,109 @@ const renderBulletedList = (text: string | null | undefined) => {
   );
 };
 
+const TEACHING_METHODS = [
+  "វិធីសាស្ត្ររៀនតាមបែបរិះរក (Inquiry-Based Learning - IBL)",
+  "ម៉ូដែលបង្រៀនបែប 5E (5E Instructional Model)",
+  "វិធីសាស្ត្ររៀនតាមបែបដោះស្រាយបញ្ហា (Problem-Based Learning - PBL)",
+  "វិធីសាស្ត្ររៀនតាមបែបគម្រោង (Project-Based Learning)",
+  "បច្ចេកទេសរៀនតាមបែបសហការ (Cooperative Learning Techniques)",
+  "ថ្នាក់រៀនត្រឡប់ (Flipped Classroom)",
+  "ការសិក្សាតាមបទពិសោធន៍ (Experiential Learning)",
+  "វិធីសាស្រ្តសូក្រាត (Socratic Method)",
+  "ការរៀនផ្អែកលើល្បែង (Game-Based Learning)"
+];
+
+const TEACHING_STRATEGIES = [
+  "ការគិត-ចាប់គូ-ចែករំលែក (Think-Pair-Share)",
+  "វិធីសាស្រ្តជីកស ឬ ការផ្គុំចំណេះដឹង (Jigsaw Technique)",
+  "ការបំផុសគំនិត (Brainstorming)",
+  "ការដើរមើលវិចិត្រសាល (Gallery Walk)",
+  "ការដើរតួ ឬ ការលេងតួ (Role-playing)",
+  "ការជជែកដេញដោល (Debate)",
+  "ផែនទីគំនិត (Mind Mapping)",
+  "ការបង្រៀនដោយមិត្តភក្តិ (Peer Teaching)",
+  "ការសិក្សាករណី (Case Study)",
+  "ការអនុវត្តផ្ទាល់ (Hands-on Activity)",
+  "ការពិភាក្សាបែបអាងត្រី (Fishbowl Discussion)",
+  "ការពិភាក្សាបែបដុំព្រិល (Snowballing Discussion)",
+  "សិក្ខាសាលាសូក្រាត (Socratic Seminar)",
+  "ការឆ្លើយវិលជុំ ឬ តុរាងរង្វង់ (Round Robin / Round Table)",
+  "មួកគិតទាំង៦ (Six Thinking Hats)",
+  "ការធ្វើត្រាប់តាម ឬ ក្លែងធ្វើ (Simulation)",
+  "ការរៀនតាមស្ថានីយ (Station Rotation)",
+  "សំបុត្រចេញ / សំបុត្រចូល (Exit Ticket / Entry Ticket)",
+  "ក្រដាសមួយនាទី (One-Minute Paper)",
+  "ចំណុចស្រអាប់បំផុត (Muddiest Point)",
+  "តារាង KWL (KWL Chart)",
+  "ប័ណ្ណបង្ហាញ ឬ ប័ណ្ណបោះឆ្នោត (Flashcards / Polling Cards)"
+];
+
 export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
   const [plan, setPlan] = useState<LessonPlan>(INITIAL_PLAN);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showGlossary, setShowGlossary] = useState(false);
+  const [worksheetType, setWorksheetType] = useState<'student' | 'teacher' | null>(null);
+  const [showSlideGenerator, setShowSlideGenerator] = useState(false);
+
+  const handleAnalyzeLesson = async () => {
+    if (!plan.lessonContent?.text) return;
+    setIsAnalyzing(true);
+    try {
+      const promptText = `អ្នកគឺជា «អ្នកជំនាញវិធីសាស្ត្របង្រៀនសតវត្សទី២១» និងជាអ្នករៀបចំកិច្ចតែងការបង្រៀនដ៏មានជំនាញ។
+ខ្ញុំមានអត្ថបទមេរៀនមួយ សូមវិភាគអត្ថបទមេរៀននេះ ហើយផ្ដល់យោបល់ពិគ្រោះថា តើគួរប្រើវិធីសាស្ត្របង្រៀនមួយណា និងយុទ្ធវិធីបង្រៀនណាខ្លះដែលមានប្រសិទ្ធភាពខ្ពស់ និងស័ក្តិសមបំផុតជាមួយមេរៀននេះ។
+ឆ្លើយតបតែជាទម្រង់ JSON ប៉ុណ្ណោះ ដូចកម្មវត្ថុនេះ៖
+{
+  "teachingMethods": ["ឈ្មោះវិធីសាស្រ្ត១ (យកចេញពីបញ្ជីខាងក្រោម)", "ឈ្មោះវិធីសាស្រ្ត២"],
+  "strategies": ["ឈ្មោះយុទ្ធវិធី១ (យកចេញពីបញ្ជីខាងក្រោម)", "ឈ្មោះយុទ្ធវិធី២"]
+}
+
+បញ្ជីវិធីសាស្ត្របង្រៀន៖
+[${TEACHING_METHODS.join(', ')}]
+
+បញ្ជីយុទ្ធវិធីបង្រៀន៖
+[${TEACHING_STRATEGIES.join(', ')}]
+
+អត្ថបទមេរៀន៖ ${plan.lessonContent.text}`;
+
+      const response = await fetch('/api/generateLessonPlan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ promptText })
+      });
+      
+      if (!response.ok) {
+        throw new Error('API request failed');
+      }
+      
+      const data = await response.json();
+      const text = data.text || '';
+      const cleanedText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+      const parsed = JSON.parse(cleanedText);
+      
+      let newStrategy = prevStrategy => prevStrategy;
+      if (Array.isArray(parsed.strategies) && parsed.strategies.length > 0) {
+        newStrategy = parsed.strategies.join(', ');
+      }
+      
+      let newMethods = prevMethods => prevMethods;
+      if (Array.isArray(parsed.teachingMethods) && parsed.teachingMethods.length > 0) {
+        newMethods = parsed.teachingMethods.join(', ');
+      } else if (typeof parsed.teachingMethod === 'string') {
+        newMethods = parsed.teachingMethod;
+      }
+      
+      setPlan(prev => ({
+        ...prev,
+        teachingMethods: newMethods(prev.teachingMethods),
+        strategy: newStrategy(prev.strategy)
+      }));
+    } catch (error) {
+      console.error("Analysis Error:", error);
+      alert('មានបញ្ហាក្នុងការវិភាគមេរៀន។ សូមព្យាយាមម្ដងទៀត។');
+    }
+    setIsAnalyzing(false);
+  };
 
   const handleGenerateAI = async () => {
     setIsGenerating(true);
@@ -123,6 +231,7 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
       ចំណងជើងរង៖ ${plan.subTitle || ''}
       អត្ថបទមេរៀន៖ ${plan.lessonContent?.text || ''}
       វិធីសាស្ត្រដែលត្រូវជ្រើសរើស៖ ${plan.teachingMethods || 'មិនបានជ្រើសរើស'}
+      យុទ្ធវិធីបង្រៀនដែលត្រូវជ្រើសរើស៖ ${plan.strategy || 'មិនបានជ្រើសរើស'}
 
       ចូរអ្នកបង្កើតកិច្ចតែងការបង្រៀនមួយ ដែលលម្អិត ងាយស្រួលអនុវត្តជាក់ស្ដែងក្នុងថ្នាក់រៀន មានការកំណត់ពេលវេលាច្បាស់លាស់ និងបង្ហាញពីសកម្មភាពគ្រូ និងសកម្មភាពសិស្ស (ជាពិសេសសកម្មភាពសកម្មរបស់សិស្ស)។
       
@@ -156,6 +265,8 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
         - ជំហានទី៣: ចែកក្រុម តួនាទីច្បាស់លាស់ (យោង Jigsaw ល) សិស្សធ្វើការពិភាក្សាធានាថាយល់រៀងខ្លួន។
         - ជំហានទី៤: តំណាងក្រុមឡើងឆ្លើយ(ចៃដន្យ) សិស្សធ្វើលំហាត់ពង្រឹងសមត្ថភាពរួមគ្នា។
         - ជំហានទី៥: វាយតម្លៃលទ្ធផលក្រុមនិងបុគ្គលម្នាក់ៗ និងដាក់កិច្ចការផ្ទះ។
+      ៦. យុទ្ធវិធីបង្រៀនផ្សេងៗ (Teaching Strategies):
+        - សូមរៀបចំសកម្មភាពឱ្យស៊ីសង្វាក់ទៅតាមធម្មជាតិនៃយុទ្ធវិធីនីមួយៗ ដូចជា Think-Pair-Share, Jigsaw, Brainstorming, Role-playing ជាដើម ដោយធានាថាការចូលរួមរបស់សិស្សមានភាពសកម្មក្នុងជំហានទី៣ និងទី៤។
 
       ចំណាំសំខាន់បំផុតទី៣ (ការបំពេញក្រឡោន):
       សូមវែកញែកអត្ថបទមេរៀន ហើយបញ្ចូលទៅក្នុងក្រឡោនទាំង៣ (សកម្មភាពគ្រូ ខ្លឹមសារមេរៀន សកម្មភាពសិស្ស) សម្រាប់គ្រប់ជំហានទាំង៥ (ពីជំហានទី១ ដល់ជំហានទី៥) ដោយស្វ័យប្រវត្តិតាមការទាមទារជាក់ស្ដែងនីមួយៗ ឱ្យបានក្បោះក្បាយ។ ជំហានទី៣ ៤ ៥ ត្រូវតែគោរពតាមវិធីសាស្ត្របង្រៀនខាងលើ។
@@ -329,8 +440,8 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
           >
             <ChevronLeft className="w-5 h-5" /> ត្រឡប់ក្រោយ
           </button>
-          <h2 className="text-3xl font-black text-slate-800 font-kantumruy">បង្កើតកិច្ចតែងការបង្រៀន</h2>
-          <p className="text-slate-500 font-khmer">ប្រើប្រាស់ AI ដើម្បីជំនួយក្នុងការរៀបចំកិច្ចតែងការបានយ៉ាងរហ័ស</p>
+          <h2 className="text-3xl font-black text-slate-800 font-kantumruy mb-2 leading-relaxed">បង្កើតកិច្ចតែងការបង្រៀន</h2>
+          <p className="text-slate-500 font-khmer mt-2">ប្រើប្រាស់ AI ដើម្បីជំនួយក្នុងការរៀបចំកិច្ចតែងការបានយ៉ាងរហ័ស</p>
         </div>
       </header>
 
@@ -388,7 +499,18 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
                 </div>
                 
                 <div>
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2 mb-2 block">អត្ថបទមេរៀន</label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2 block">អត្ថបទមេរៀន</label>
+                    <button 
+                      onClick={handleAnalyzeLesson}
+                      disabled={isAnalyzing || !plan.lessonContent?.text}
+                      title="ជំនួយដោយ AI"
+                      className="text-xs font-bold bg-amber-100 text-amber-700 hover:bg-amber-200 px-3 py-1 rounded-full flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                    >
+                      {isAnalyzing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Lightbulb className="w-3.5 h-3.5" />}
+                      វិភាគមេរៀន
+                    </button>
+                  </div>
                   <textarea value={plan.lessonContent?.text || ''} onChange={e => setPlan({...plan, lessonContent: {...plan.lessonContent, text: e.target.value}})} placeholder="បញ្ចូលអត្ថបទមេរៀនសង្ខេបដើម្បីឱ្យ AI ជំនួយការបង្កើតវត្ថុបំណង..." className="w-full px-5 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-emerald-500 font-khmer min-h-[80px]" />
                 </div>
 
@@ -414,24 +536,93 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
                 </div>
 
                 <div>
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2 mb-2 block">វិធីសាស្រ្តបង្រៀន</label>
-                  <div className="relative">
-                     <select 
-                       value={plan.teachingMethods || ''} 
-                       onChange={e => setPlan({...plan, teachingMethods: e.target.value})} 
-                       className="w-full px-5 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-emerald-500 font-khmer appearance-none"
-                     >
-                       <option value="">-- សូមជ្រើសរើសវិធីសាស្ត្រ --</option>
-                       <option value="វិធីសាស្ត្ររៀនតាមបែបរិះរក (Inquiry-Based Learning - IBL)">វិធីសាស្ត្ររៀនតាមបែបរិះរក (Inquiry-Based Learning - IBL)</option>
-                       <option value="ម៉ូដែលបង្រៀនបែប 5E (5E Instructional Model)">ម៉ូដែលបង្រៀនបែប 5E (5E Instructional Model)</option>
-                       <option value="វិធីសាស្ត្ររៀនតាមបែបដោះស្រាយបញ្ហា (Problem-Based Learning - PBL)">វិធីសាស្ត្ររៀនតាមបែបដោះស្រាយបញ្ហា (Problem-Based Learning - PBL)</option>
-                       <option value="វិធីសាស្ត្ររៀនតាមបែបគម្រោង (Project-Based Learning)">វិធីសាស្ត្ររៀនតាមបែបគម្រោង (Project-Based Learning)</option>
-                       <option value="បច្ចេកទេសរៀនតាមបែបសហការ (Cooperative Learning Techniques)">បច្ចេកទេសរៀនតាមបែបសហការ (Cooperative Learning Techniques)</option>
-                     </select>
-                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
-                       <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                     </div>
+                  <div className="flex items-center justify-between pl-2 mb-2">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest block">វិធីសាស្រ្តបង្រៀន (Teaching Methods)</label>
+                    <button 
+                      onClick={() => setShowGlossary(true)}
+                      className="text-[10px] sm:text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2 sm:px-3 py-1 rounded-full flex items-center gap-1.5 transition-colors"
+                      title="ស្វែងយល់ពីវិធីសាស្ត្រ"
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">ស្វែងយល់លម្អិត</span>
+                    </button>
                   </div>
+                  <details className="group relative">
+                    <summary className="w-full px-5 py-3 bg-slate-50 rounded-xl cursor-pointer list-none font-khmer flex justify-between items-center transition-colors hover:bg-slate-100 ring-0 focus:ring-2 focus:ring-emerald-500 outline-none">
+                      <span className="truncate mr-4 text-slate-700 leading-relaxed">
+                        {plan.teachingMethods ? plan.teachingMethods : <span className="text-slate-400">-- សូមជ្រើសរើសវិធីសាស្ត្រ (អាចរើសច្រើន) --</span>}
+                      </span>
+                      <svg className="fill-current h-4 w-4 shrink-0 text-slate-400 group-open:rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </summary>
+                    <div className="absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl max-h-64 overflow-y-auto overflow-x-hidden p-2">
+                       {TEACHING_METHODS.map(method => {
+                         const currentMethods = plan.teachingMethods ? plan.teachingMethods.split(', ') : [];
+                         const isSelected = currentMethods.includes(method);
+                         return (
+                           <label
+                             key={method}
+                             className="px-3 py-2.5 hover:bg-slate-50 cursor-pointer flex items-start gap-3 font-khmer text-sm rounded-lg transition-colors border-b border-slate-50 last:border-0"
+                           >
+                             <input
+                               type="checkbox"
+                               checked={isSelected}
+                               onChange={(e) => {
+                                 let newMethods = [...currentMethods];
+                                 if (e.target.checked) {
+                                   newMethods.push(method);
+                                 } else {
+                                   newMethods = newMethods.filter(m => m !== method);
+                                 }
+                                 setPlan({...plan, teachingMethods: newMethods.join(', ')});
+                               }}
+                               className="mt-1 w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 bg-white shadow-sm cursor-pointer"
+                             />
+                             <span className={`flex-1 ${isSelected ? 'text-emerald-700 font-bold' : 'text-slate-700'}`}>{method}</span>
+                           </label>
+                         );
+                       })}
+                    </div>
+                  </details>
+                </div>
+
+                <div>
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-2 mb-2 block">យុទ្ធវិធីបង្រៀន (Teaching Strategies)</label>
+                  <details className="group relative">
+                    <summary className="w-full px-5 py-3 bg-slate-50 rounded-xl cursor-pointer list-none font-khmer flex justify-between items-center transition-colors hover:bg-slate-100 ring-0 focus:ring-2 focus:ring-emerald-500 outline-none">
+                      <span className="truncate mr-4 text-slate-700 leading-relaxed">
+                        {plan.strategy ? plan.strategy : <span className="text-slate-400">-- សូមជ្រើសរើសយុទ្ធវិធី (អាចរើសច្រើន) --</span>}
+                      </span>
+                      <svg className="fill-current h-4 w-4 shrink-0 text-slate-400 group-open:rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </summary>
+                    <div className="absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl max-h-64 overflow-y-auto overflow-x-hidden p-2">
+                       {TEACHING_STRATEGIES.map(strategy => {
+                         const currentStrategies = plan.strategy ? plan.strategy.split(', ') : [];
+                         const isSelected = currentStrategies.includes(strategy);
+                         return (
+                           <label
+                             key={strategy}
+                             className="px-3 py-2.5 hover:bg-slate-50 cursor-pointer flex items-start gap-3 font-khmer text-sm rounded-lg transition-colors border-b border-slate-50 last:border-0"
+                           >
+                             <input
+                               type="checkbox"
+                               checked={isSelected}
+                               onChange={(e) => {
+                                 let newStrategies = [...currentStrategies];
+                                 if (e.target.checked) {
+                                   newStrategies.push(strategy);
+                                 } else {
+                                   newStrategies = newStrategies.filter(s => s !== strategy);
+                                 }
+                                 setPlan({...plan, strategy: newStrategies.join(', ')});
+                               }}
+                               className="mt-1 w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 bg-white shadow-sm cursor-pointer"
+                             />
+                             <span className={`flex-1 ${isSelected ? 'text-emerald-700 font-bold' : 'text-slate-700'}`}>{strategy}</span>
+                           </label>
+                         );
+                       })}
+                    </div>
+                  </details>
                 </div>
                 
                 <div>
@@ -494,6 +685,7 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
                     <li><span className="font-bold">រយៈពេល៖</span> {plan.duration} នាទី</li>
                     <li><span className="font-bold">ឯកសារ៖</span> {plan.references}</li>
                     <li><span className="font-bold">វិធីសាស្ត្របង្រៀន៖</span> {plan.teachingMethods}</li>
+                    <li><span className="font-bold">យុទ្ធវិធីបង្រៀន៖</span> {plan.strategy}</li>
                     <li><span className="font-bold">ទីកន្លែង៖</span> {plan.location}</li>
                     <li><span className="font-bold">បង្រៀនដោយ៖</span> {plan.taughtBy}</li>
                  </ul>
@@ -578,6 +770,15 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
               </div>
 
               <div className="mt-8 pt-8 border-t border-slate-50 flex justify-end gap-3 print:hidden flex-wrap">
+                 <button onClick={() => setWorksheetType('student')} className="px-6 py-3 bg-sky-50 text-sky-600 rounded-xl font-bold flex items-center gap-2 hover:bg-sky-100 transition-all mr-auto">
+                    <Sparkles className="w-5 h-5 pointer-events-none" /> សន្លឹកកិច្ចការសិស្ស
+                 </button>
+                 <button onClick={() => setWorksheetType('teacher')} className="px-6 py-3 bg-rose-50 text-rose-600 rounded-xl font-bold flex items-center gap-2 hover:bg-rose-100 transition-all mr-auto">
+                    <Sparkles className="w-5 h-5 pointer-events-none" /> សន្លឹកកិច្ចការគ្រូ
+                 </button>
+                 <button onClick={() => setShowSlideGenerator(true)} className="px-6 py-3 bg-violet-50 text-violet-600 rounded-xl font-bold flex items-center gap-2 hover:bg-violet-100 transition-all mr-auto">
+                    <Presentation className="w-5 h-5" /> បង្កើតស្លាយមេរៀន
+                 </button>
                  <button onClick={() => handleExportWord()} className="px-6 py-3 bg-blue-50 text-blue-600 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-100 transition-all">
                     <FileDown className="w-5 h-5" /> ទាញយកជា Word (DOC)
                  </button>
@@ -591,6 +792,24 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
            </div>
         </div>
       </div>
+
+      <TeachingGlossaryModal 
+        isOpen={showGlossary} 
+        onClose={() => setShowGlossary(false)} 
+      />
+      {worksheetType && (
+        <WorksheetModal
+          isOpen={true}
+          onClose={() => setWorksheetType(null)}
+          plan={plan}
+          type={worksheetType}
+        />
+      )}
+      <SlideGeneratorModal
+        isOpen={showSlideGenerator}
+        onClose={() => setShowSlideGenerator(false)}
+        plan={plan}
+      />
     </div>
   );
 }

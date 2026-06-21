@@ -225,8 +225,8 @@ export default function AttendanceView({ onBack }: AttendanceViewProps) {
       </div>
 
       <div className="text-center space-y-2">
-        <h2 className="text-3xl font-black text-slate-800 font-kantumruy">ប្រព័ន្ធស្កេន QR កត់វត្តមាន</h2>
-        <p className="text-slate-500 font-medium">ស្កេនកាតសិស្សដើម្បីកត់ត្រាវត្តមានស្វ័យប្រវត្ត</p>
+        <h2 className="text-3xl font-black text-slate-800 font-kantumruy leading-relaxed mb-2">ប្រព័ន្ធស្កេន QR កត់វត្តមាន</h2>
+        <p className="text-slate-500 font-medium mt-2">ស្កេនកាតសិស្សដើម្បីកត់ត្រាវត្តមានស្វ័យប្រវត្ត</p>
       </div>
 
       <div className="max-w-xl mx-auto space-y-8">

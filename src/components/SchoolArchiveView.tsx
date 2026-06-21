@@ -122,9 +122,9 @@ export default function SchoolArchiveView({ onBack }: SchoolArchiveViewProps) {
                     ប្រព័ន្ធបង្កើតកិច្ចតែងការ Digital
                 </h1>
             </div>
-            <div className="w-40 h-1.5 bg-gradient-to-r from-transparent via-[#FFCA28] to-transparent rounded-full opacity-60"></div>
+            <div className="w-40 h-1.5 bg-gradient-to-r from-transparent via-[#FFCA28] to-transparent rounded-full opacity-60 mb-2"></div>
             {/* Welcome Section in Kantumruy Pro */}
-            <h2 className="font-kantumruy-pro text-white text-xl md:text-3xl font-black opacity-95 drop-shadow-lg scale-105">
+            <h2 className="font-kantumruy-pro leading-relaxed text-white text-xl md:text-3xl font-black opacity-95 drop-shadow-lg scale-105">
                 សូមស្វាគមន៍មកកាន់ប្រព័ន្ធ Digital
             </h2>
         </div>

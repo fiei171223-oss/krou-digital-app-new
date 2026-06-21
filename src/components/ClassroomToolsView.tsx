@@ -65,8 +65,8 @@ export default function ClassroomToolsView({ onBack }: ClassroomToolsViewProps) 
       </div>
 
       <div className="text-center space-y-2">
-        <h2 className="text-3xl font-black text-slate-800 font-kantumruy uppercase tracking-tight">ប្រអប់ឧបករណ៍ជំនួយការបង្រៀន</h2>
-        <p className="text-slate-500 font-medium font-khmer">បច្ចេកវិទ្យាជំនួយការគ្រប់គ្រងថ្នាក់រៀន</p>
+        <h2 className="text-3xl font-black text-slate-800 font-kantumruy uppercase tracking-tight leading-relaxed mb-2">ប្រអប់ឧបករណ៍ជំនួយការបង្រៀន</h2>
+        <p className="text-slate-500 font-medium font-khmer mt-2">បច្ចេកវិទ្យាជំនួយការគ្រប់គ្រងថ្នាក់រៀន</p>
       </div>
 
       <div className="max-w-6xl mx-auto px-4">

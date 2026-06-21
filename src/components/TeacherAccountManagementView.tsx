@@ -81,7 +81,7 @@ export default function TeacherAccountManagementView({ onBack }: { onBack: () =>
       </div>
 
       <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100">
-        <h2 className="text-xl font-black text-slate-800 font-kantumruy mb-6 flex items-center gap-3">
+        <h2 className="text-xl font-black text-slate-800 font-kantumruy leading-relaxed mb-6 flex items-center gap-3">
           <KeyRound className="w-6 h-6 text-indigo-500" /> គ្រប់គ្រងលេខកូដគ្រូបង្រៀន
         </h2>
 

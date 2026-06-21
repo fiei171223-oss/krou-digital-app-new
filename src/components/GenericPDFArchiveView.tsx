@@ -76,8 +76,8 @@ export default function GenericPDFArchiveView({
           >
             <ChevronLeft className="w-5 h-5" /> ត្រឡប់ក្រោយ
           </button>
-          <h2 className="text-3xl font-black text-slate-800 font-kantumruy">{title}</h2>
-          <p className="text-slate-500 font-khmer">{description}</p>
+          <h2 className="text-3xl font-black text-slate-800 font-kantumruy leading-relaxed mb-2">{title}</h2>
+          <p className="text-slate-500 font-khmer mt-2">{description}</p>
         </div>
         <button 
           onClick={() => setIsAddOpen(true)}

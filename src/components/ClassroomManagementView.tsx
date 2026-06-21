@@ -8,7 +8,8 @@ import {
   Plus, 
   Save, 
   User,
-  Clock
+  Clock,
+  Printer
 } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
