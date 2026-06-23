@@ -32,7 +32,8 @@ export default function SlideGeneratorModal({ isOpen, onClose, plan }: Props) {
   const generateSlideOutline = async () => {
     setIsLoading(true);
     try {
-      const contentStr = plan.steps.map(s => s.content).filter(Boolean).join('\n');
+      const stepsArr = Object.values(plan.steps);
+      const contentStr = stepsArr.map(s => s.content).filter(Boolean).join('\n');
       
       const promptText = `អ្នកគឺជាអ្នកបង្កើតស្លាយបទបង្ហាញដ៏ចំណានម្នាក់។ សូមប្រែសម្រួលកិច្ចតែងការបង្រៀននេះទៅជាស្លាយបទបង្ហាញដ៏ទាក់ទាញ (Presentation Outline)។
 ម៉ោងសិក្សា៖ ${plan.subject}, មេរៀន៖ ${plan.lessonTitle}, ថ្នាក់ទី៖ ${plan.grade}
@@ -63,6 +64,10 @@ ${contentStr}
       const data = await response.json();
       let text = data.text || '';
       text = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+      const match = text.match(/\[[\s\S]*\]/);
+      if (match) {
+        text = match[0];
+      }
       const parsedSlides = JSON.parse(text);
       setSlides(parsedSlides);
     } catch (error) {

@@ -182,34 +182,46 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
       });
       
       if (!response.ok) {
-        throw new Error('API request failed');
+        const errData = await response.json().catch(() => null);
+        throw new Error(errData?.error || 'API request failed');
       }
       
       const data = await response.json();
       const text = data.text || '';
-      const cleanedText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
-      const parsed = JSON.parse(cleanedText);
-      
-      let newStrategy = prevStrategy => prevStrategy;
-      if (Array.isArray(parsed.strategies) && parsed.strategies.length > 0) {
-        newStrategy = parsed.strategies.join(', ');
+      try {
+        let cleanedText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const match = cleanedText.match(/\{[\s\S]*\}/);
+        if (match) {
+          cleanedText = match[0];
+        }
+        const parsed = JSON.parse(cleanedText);
+        
+        let newStrategy = '';
+        if (Array.isArray(parsed.strategies) && parsed.strategies.length > 0) {
+          newStrategy = parsed.strategies.join(', ');
+        } else if (typeof parsed.strategy === 'string') {
+          newStrategy = parsed.strategy;
+        }
+        
+        let newMethods = '';
+        if (Array.isArray(parsed.teachingMethods) && parsed.teachingMethods.length > 0) {
+          newMethods = parsed.teachingMethods.join(', ');
+        } else if (typeof parsed.teachingMethod === 'string') {
+          newMethods = parsed.teachingMethod;
+        }
+        
+        setPlan(prev => ({
+          ...prev,
+          teachingMethods: newMethods || prev.teachingMethods,
+          strategy: newStrategy || prev.strategy
+        }));
+      } catch (parseError) {
+        console.error("Analysis Parse Error:", parseError, text);
+        alert("បរាជ័យក្នុងការវិភាគទិន្នន័យ។ សូមព្យាយាមម្ដងទៀត។");
       }
-      
-      let newMethods = prevMethods => prevMethods;
-      if (Array.isArray(parsed.teachingMethods) && parsed.teachingMethods.length > 0) {
-        newMethods = parsed.teachingMethods.join(', ');
-      } else if (typeof parsed.teachingMethod === 'string') {
-        newMethods = parsed.teachingMethod;
-      }
-      
-      setPlan(prev => ({
-        ...prev,
-        teachingMethods: newMethods(prev.teachingMethods),
-        strategy: newStrategy(prev.strategy)
-      }));
-    } catch (error) {
+      } catch (error: any) {
       console.error("Analysis Error:", error);
-      alert('មានបញ្ហាក្នុងការវិភាគមេរៀន។ សូមព្យាយាមម្ដងទៀត។');
+      alert(`មានបញ្ហាក្នុងការវិភាគមេរៀន៖ ${error.message}\nសូមព្យាយាមម្ដងទៀត។`);
     }
     setIsAnalyzing(false);
   };
@@ -334,7 +346,11 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
       const data = await response.json();
       const text = data.text || '';
       try {
-        const cleanedText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+        let cleanedText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const match = cleanedText.match(/\{[\s\S]*\}/);
+        if (match) {
+          cleanedText = match[0];
+        }
         const parsed = JSON.parse(cleanedText);
         
         setPlan(prev => ({

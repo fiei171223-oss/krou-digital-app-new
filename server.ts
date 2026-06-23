@@ -35,14 +35,18 @@ async function startServer() {
       }
 
       const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-flash-latest",
         contents: [promptText]
       });
 
       res.json({ text: response.text });
     } catch (error: any) {
       console.error("Error generating content:", error);
-      res.status(500).json({ error: error.message || "Failed to generate content" });
+      let errorMessage = error.message || "Failed to generate content";
+      if (errorMessage.includes("UNAVAILABLE") || errorMessage.includes("high demand") || errorMessage.includes("503")) {
+        errorMessage = "ប្រព័ន្ធ AI កំពុងមានអ្នកប្រើប្រាស់ច្រើន (High Demand)។ សូមរង់ចាំបន្តិច រួចព្យាយាមម្ដងទៀត។";
+      }
+      res.status(500).json({ error: errorMessage });
     }
   });
 

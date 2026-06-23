@@ -28,9 +28,10 @@ export default function WorksheetModal({ isOpen, onClose, plan, type }: Props) {
     try {
       const isStudent = type === 'student';
       
-      const teacherActivityStr = plan.steps.map(s => s.teacherActivity).filter(Boolean).join('\n');
-      const studentActivityStr = plan.steps.map(s => s.studentActivity).filter(Boolean).join('\n');
-      const contentStr = plan.steps.map(s => s.content).filter(Boolean).join('\n');
+      const stepsArr = Object.values(plan.steps);
+      const teacherActivityStr = stepsArr.map(s => s.teacherActivity).filter(Boolean).join('\n');
+      const studentActivityStr = stepsArr.map(s => s.studentActivity).filter(Boolean).join('\n');
+      const contentStr = stepsArr.map(s => s.content).filter(Boolean).join('\n');
       
       const promptText = `អ្នកគឺជាគ្រូបង្រៀនកម្រិតបឋមដ៏ចំណានម្នាក់នៅកម្ពុជា។ 
 សូមបង្កើត «${isStudent ? 'សន្លឹកកិច្ចការសិស្ស (Student Worksheet)' : 'សន្លឹកកិច្ចការគ្រូ និងគន្លឹះបង្រៀន (Teacher Guide)'}» ដោយផ្អែកលើកិច្ចតែងការបង្រៀនខាងក្រោមនេះ។
