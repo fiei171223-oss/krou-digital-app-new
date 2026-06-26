@@ -35,7 +35,7 @@ export default function SlideGeneratorModal({ isOpen, onClose, plan }: Props) {
       const stepsArr = Object.values(plan.steps);
       const contentStr = stepsArr.map(s => s.content).filter(Boolean).join('\n');
       
-      const promptText = `អ្នកគឺជាអ្នកបង្កើតស្លាយបទបង្ហាញដ៏ចំណានម្នាក់។ សូមប្រែសម្រួលកិច្ចតែងការបង្រៀននេះទៅជាស្លាយបទបង្ហាញដ៏ទាក់ទាញ (Presentation Outline)។
+      const promptText = `អ្នកគឺជាអ្នកបង្កើតស្លាយបទបង្ហាញដ៏ចំណានម្នាក់។ សូមប្រែសម្រួលកិច្ចតែងការបង្រៀននេះទៅជាស្លាយបទបង្ហាញដ៏ទាក់ទាញ (Presentation Outline) ដោយគោរពតាមកម្រិត Bloom's Taxonomy ទាំង៦ (ចងចាំ យល់ វិភាគ អនុវត្ត វាយតម្លៃ បង្កើតថ្មី)។
 ម៉ោងសិក្សា៖ ${plan.subject}, មេរៀន៖ ${plan.lessonTitle}, ថ្នាក់ទី៖ ${plan.grade}
 
 ខ្លឹមសារមេរៀនពីកិច្ចតែងការ៖
@@ -225,7 +225,7 @@ ${contentStr}
               <p className="text-sm text-slate-500 font-khmer mt-0.5">{plan.subject} - {plan.lessonTitle}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
              <button 
                 onClick={generateSlideOutline}
                 disabled={isLoading || isDownloading}
@@ -234,11 +234,31 @@ ${contentStr}
                 ចងក្រងម្ដងទៀត
              </button>
              <button 
+                onClick={() => alert("រក្សាទុករួចរាល់!")}
+                disabled={isLoading || slides.length === 0}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-bold transition disabled:opacity-50"
+              >
+                រក្សាទុក
+             </button>
+             <button 
                 onClick={handleDownloadPPTX}
                 disabled={isLoading || isDownloading || slides.length === 0}
                 className="px-4 py-2 flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-sm font-bold transition disabled:opacity-50"
               >
-                {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} ទាញយកឯកសារ (.pptx)
+                {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} ទាញយក PPTX
+             </button>
+             <button 
+                onClick={() => window.print()}
+                disabled={isLoading || slides.length === 0}
+                className="px-4 py-2 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-bold transition disabled:opacity-50"
+              >
+                ទាញយក PDF
+             </button>
+             <button 
+                onClick={() => { setSlides([]); onClose(); }}
+                className="px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg text-sm font-bold transition-colors"
+              >
+                លុប
              </button>
              <button 
                 onClick={onClose}
