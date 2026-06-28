@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Search, User, LogIn, LogOut, BookOpen } from 'lucide-react';
+import { User, LogIn, LogOut, BookOpen, Crown } from 'lucide-react';
 import { auth } from '../lib/firebase';
 import { GoogleAuthProvider, signInWithPopup, signOut, User as FirebaseUser } from 'firebase/auth';
 
@@ -106,7 +106,7 @@ export default function AppHeader({ onLogout }: { onLogout?: () => void }) {
             <div className="hidden sm:block h-10 w-[2px] bg-gradient-to-b from-transparent via-emerald-500/40 to-transparent mx-2 rounded-full" />
 
             <div className="flex flex-col py-1">
-              <h1 className="text-base sm:text-lg md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-emerald-200 font-kantumruy leading-tight tracking-tight drop-shadow-sm filter contrast-125">
+              <h1 className="text-base sm:text-lg md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-emerald-200 font-moul leading-tight tracking-tight drop-shadow-sm filter contrast-125 pb-1 pt-1">
                 គ្រូបង្រៀនឌីជីថល
               </h1>
               <p className="hidden sm:flex text-emerald-400 font-bold text-[7px] md:text-[9px] tracking-[0.4em] uppercase font-sans mt-0.5 opacity-80 items-center gap-2">
@@ -118,20 +118,16 @@ export default function AppHeader({ onLogout }: { onLogout?: () => void }) {
           </div>
 
           {/* Right: Search & Profile & Backup Status */}
-          <div className="flex items-center gap-3 sm:gap-8">
+          <div className="flex items-center gap-3 sm:gap-6">
 
-
-            {/* Dark Search Bar */}
-            <div className="relative hidden lg:block group w-80">
-              <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                <Search className="w-4 h-4 text-white/30" strokeWidth={3} />
-              </div>
-              <input 
-                type="text" 
-                placeholder="ស្វែងរកមេរៀនបង្រៀន..."
-                className="w-full pl-12 pr-6 py-2.5 bg-black/30 border border-white/5 rounded-full text-white placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-[#FACC15]/30 transition-all font-khmer text-sm"
-              />
-            </div>
+            {/* Prime Button */}
+            <button className="hidden sm:flex relative group items-center bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full pl-3 pr-1.5 py-1.5 gap-2 shadow-lg hover:shadow-amber-500/30 transition-all hover:-translate-y-0.5 border border-amber-300">
+              <Crown className="w-4 h-4 text-white drop-shadow-sm" />
+              <span className="text-white font-bold text-xs uppercase tracking-wide drop-shadow-sm">Prime</span>
+              <span className="bg-white text-amber-600 text-[10px] font-black px-2 py-0.5 rounded-full shadow-inner animate-pulse whitespace-nowrap">
+                Free 1ខែ
+              </span>
+            </button>
 
             {/* Profile & Auth */}
             <div className="flex items-center gap-4">
@@ -144,16 +140,24 @@ export default function AppHeader({ onLogout }: { onLogout?: () => void }) {
               </button>
               
               <div className="flex items-center gap-4">
-                <div className="hidden md:flex flex-col items-end">
-                  <span className="text-white font-bold text-xs khmer-font">
+                <div className="hidden md:flex flex-col items-end justify-center gap-3">
+                  <span className="text-white font-bold text-sm leading-normal pb-1" style={{ fontFamily: isAdmin ? '"Khmer Mool1", Moul' : undefined }}>
                     {currentName}
                   </span>
-                  <span className="text-emerald-300 text-[10px] font-bold uppercase tracking-widest">
+                  <span className="text-emerald-300 text-xs font-bold uppercase tracking-widest leading-normal pt-1" style={{ fontFamily: isAdmin ? '"Kh Muol Pali", Moul' : undefined }}>
                     {isAdmin ? 'អ្នកគ្រប់គ្រង' : 'គ្រូបង្រៀន'}
                   </span>
                 </div>
                 <div className="relative group">
-                  <div className="w-11 h-11 bg-transparent rounded-full flex items-center justify-center border-[2px] border-white shadow-2xl transition-all hover:scale-110 active:scale-95 overflow-hidden">
+                  {/* Glow effect */}
+                  <div className={`absolute -inset-2 rounded-full blur-md opacity-60 transition-opacity group-hover:opacity-100 ${isAdmin ? 'bg-amber-500' : 'bg-yellow-400'}`}></div>
+                  
+                  {/* Spinning Ring */}
+                  <div className={`absolute -inset-1 rounded-full border-[3px] border-t-transparent border-r-transparent animate-[spin_3s_linear_infinite] z-0 ${isAdmin ? 'border-amber-400' : 'border-yellow-400'}`}></div>
+                  <div className={`absolute -inset-1 rounded-full border-[3px] border-b-transparent border-l-transparent animate-[spin_4s_linear_infinite_reverse] z-0 ${isAdmin ? 'border-yellow-200' : 'border-amber-200'}`}></div>
+
+                  {/* Avatar Container */}
+                  <div className="relative z-10 w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center border-[2px] border-white shadow-2xl transition-all hover:scale-110 active:scale-95 overflow-hidden">
                     {user?.photoURL ? (
                       <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     ) : currentAvatar ? (
@@ -163,7 +167,7 @@ export default function AppHeader({ onLogout }: { onLogout?: () => void }) {
                         className="w-full h-full object-cover" 
                       />
                     ) : (
-                      <User className="w-6 h-6 text-white" />
+                      <User className="w-6 h-6 text-slate-300" />
                     )}
                   </div>
                 </div>

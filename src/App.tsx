@@ -100,6 +100,7 @@ import StudentRewardsView from './components/StudentRewardsView';
 import LessonPlanForm from './components/LessonPlanForm';
 import GenericPDFArchiveView from './components/GenericPDFArchiveView';
 import MonthlyAttendanceReport from './components/MonthlyAttendanceReport';
+import AdminDashboard from './components/AdminDashboard';
 import LoginView from './components/LoginView';
 import TeacherAccountManagementView from './components/TeacherAccountManagementView';
 import { KeyRound } from 'lucide-react';
@@ -227,6 +228,8 @@ export default function App() {
     return <LoginView onLogin={() => setIsAuthenticated(true)} />;
   }
 
+  const isAdmin = !!localStorage.getItem('adminName');
+
   return (
     <div className="min-h-screen mesh-pastel-bg flex flex-col font-khmer text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
       <AppHeader onLogout={handleLogout} />
@@ -241,6 +244,7 @@ export default function App() {
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
             >
+              {isAdmin && <AdminDashboard />}
               <Dashboard setView={setView} atRiskCount={atRiskCount} />
             </motion.div>
           ) : (
@@ -385,14 +389,14 @@ function Dashboard({ setView, atRiskCount }: { setView: (view: string) => void, 
         <div className="absolute inset-0 bg-white/30 z-0 pointer-events-none"></div>
 
         <div className="relative z-10 w-full text-center py-10 flex flex-col items-center justify-center">
-          <h1 className="text-3xl md:text-5xl font-black font-moul tracking-wider leading-[1.6] flex flex-wrap items-center justify-center gap-3 md:gap-4">
+          <h1 className="text-2xl md:text-4xl font-black font-moul tracking-wider leading-loose flex flex-wrap items-center justify-center gap-3 md:gap-4 py-2">
             <img 
               src="https://img.icons8.com/color/96/teacher.png" 
               alt="Teacher Icon" 
-              className="w-12 h-12 md:w-16 md:h-16 shrink-0 drop-shadow-md hover:scale-105 transition-transform" 
+              className="w-10 h-10 md:w-14 md:h-14 shrink-0 drop-shadow-md hover:scale-105 transition-transform" 
             />
             <span className="text-slate-800 drop-shadow-sm">សូមស្វាគមន៍មកកាន់ </span> 
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-700 to-teal-900 drop-shadow-sm">គ្រូបង្រៀនឌីជីថល</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-700 to-teal-900 drop-shadow-sm pb-2 pt-1 px-1">គ្រូបង្រៀនឌីជីថល</span>
           </h1>
         </div>
       </div>

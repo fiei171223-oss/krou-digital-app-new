@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Lock, QrCode, ShieldCheck, User, Building2, UserCircle, KeyRound, LogIn, CalendarDays, Wallet, CheckCircle2 } from 'lucide-react';
+import { Lock, QrCode, ShieldCheck, User, Building2, UserCircle, KeyRound, LogIn, CalendarDays, Wallet, CheckCircle2, MapPin } from 'lucide-react';
 
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -22,6 +22,7 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
   const ADMIN_PIN = "168168"; // The special PIN code
 
   // Teacher details
+  const [provinceName, setProvinceName] = useState('');
   const [schoolName, setSchoolName] = useState('សាលាបឋមសិក្សាព្រែកទាល់');
   const [teacherName, setTeacherName] = useState('');
   const [teacherCode, setTeacherCode] = useState('');
@@ -75,6 +76,11 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
 
   // Handle Admin PIN pad clicks
   const handleAdminPinClick = (digit: string) => {
+    if (!adminAvatar) {
+      setError('សូមដាក់រូបថតមុនពេលបញ្ចូលលេខកូដ!');
+      return;
+    }
+    
     if (pin.length < 6) {
       const newPin = pin + digit;
       setPin(newPin);
@@ -104,8 +110,8 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
   // Handle Teacher Login
   const handleTeacherLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!schoolName || !teacherName || !teacherCode) {
-      setError('សូមបំពេញព័ត៌មានឲ្យបានគ្រប់គ្រាន់!');
+    if (!provinceName || !schoolName || !teacherName || !teacherCode || !teacherAvatar) {
+      setError('សូមបំពេញព័ត៌មាននិងដាក់រូបថតឲ្យបានគ្រប់គ្រាន់!');
       return;
     }
 
@@ -142,6 +148,7 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
     if (isFreeSchool) {
       // Free unlimited access
       localStorage.setItem('app_auth_status', 'true');
+      localStorage.setItem('user_province', provinceName);
       localStorage.setItem('user_school', schoolName);
       localStorage.setItem('user_teacher', teacherName);
       localStorage.removeItem('adminName');
@@ -169,6 +176,7 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
       const hasActiveSub = subDate && new Date(subDate) > now;
       
       // Save teacher details for all these paths
+      localStorage.setItem('user_province', provinceName);
       localStorage.setItem('user_school', schoolName);
       localStorage.setItem('user_teacher', teacherName);
       localStorage.removeItem('adminName');
@@ -389,6 +397,51 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
               </div>
 
               <div>
+                <label className="text-xs font-bold text-slate-500 mb-1.5 flex items-center gap-1.5 pl-1"><MapPin className="w-3.5 h-3.5"/> ឈ្មោះខេត្ត</label>
+                <select 
+                  value={provinceName} 
+                  onChange={(e) => setProvinceName(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-4 py-3 outline-none transition-all text-sm font-bold"
+                >
+                  <option value="">ជ្រើសរើសខេត្ត...</option>
+                  <option value="ភ្នំពេញ">រាជធានីភ្នំពេញ</option>
+                  <option value="បន្ទាយមានជ័យ">បន្ទាយមានជ័យ</option>
+                  <option value="បាត់ដំបង">បាត់ដំបង</option>
+                  <option value="កំពង់ចាម">កំពង់ចាម</option>
+                  <option value="កំពង់ឆ្នាំង">កំពង់ឆ្នាំង</option>
+                  <option value="កំពង់ស្ពឺ">កំពង់ស្ពឺ</option>
+                  <option value="កំពង់ធំ">កំពង់ធំ</option>
+                  <option value="កំពត">កំពត</option>
+                  <option value="កណ្តាល">កណ្តាល</option>
+                  <option value="កែប">កែប</option>
+                  <option value="កោះកុង">កោះកុង</option>
+                  <option value="ក្រចេះ">ក្រចេះ</option>
+                  <option value="មណ្ឌលគិរី">មណ្ឌលគិរី</option>
+                  <option value="ឧត្តរមានជ័យ">ឧត្តរមានជ័យ</option>
+                  <option value="ប៉ៃលិន">ប៉ៃលិន</option>
+                  <option value="ព្រះសីហនុ">ព្រះសីហនុ</option>
+                  <option value="ព្រះវិហារ">ព្រះវិហារ</option>
+                  <option value="ព្រៃវែង">ព្រៃវែង</option>
+                  <option value="ពោធិ៍សាត់">ពោធិ៍សាត់</option>
+                  <option value="រតនគិរី">រតនគិរី</option>
+                  <option value="សៀមរាប">សៀមរាប</option>
+                  <option value="ស្ទឹងត្រែង">ស្ទឹងត្រែង</option>
+                  <option value="ស្វាយរៀង">ស្វាយរៀង</option>
+                  <option value="តាកែវ">តាកែវ</option>
+                  <option value="ត្បូងឃ្មុំ">ត្បូងឃ្មុំ</option>
+                  <option value="ផ្សេងៗ">ផ្សេងៗ...</option>
+                </select>
+                {provinceName === 'ផ្សេងៗ' && (
+                  <input 
+                    type="text"
+                    placeholder="វាយបញ្ចូលឈ្មោះខេត្តរបស់អ្នក"
+                    onChange={(e) => setProvinceName(e.target.value)}
+                    className="w-full mt-2 bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-4 py-3 outline-none transition-all text-sm font-bold"
+                  />
+                )}
+              </div>
+
+              <div>
                 <label className="text-xs font-bold text-slate-500 mb-1.5 flex items-center gap-1.5 pl-1"><Building2 className="w-3.5 h-3.5"/> ឈ្មោះសាលា</label>
                 <select 
                   value={schoolName} 
@@ -461,8 +514,8 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
                 )}
               </div>
 
-              <h2 className="text-xl font-black font-kantumruy leading-relaxed text-slate-800 mb-1 text-center">អ្នកគ្រប់គ្រង</h2>
-              <p className="text-violet-600 font-bold mt-2 mb-8 flex items-center gap-2 text-sm bg-violet-50 px-4 py-1.5 rounded-full w-max mx-auto">
+              <h2 className="text-xl font-black leading-relaxed text-slate-800 mb-1 text-center" style={{ fontFamily: '"Kh Muol Pali", Moul' }}>អ្នកគ្រប់គ្រង</h2>
+              <p className="text-violet-600 font-bold mt-2 mb-8 flex items-center gap-2 text-sm bg-violet-50 px-4 py-1.5 rounded-full w-max mx-auto" style={{ fontFamily: '"Khmer Mool1", Moul' }}>
                 <User className="w-4 h-4" /> {adminName}
               </p>
 

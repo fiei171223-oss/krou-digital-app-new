@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { 
   ChevronLeft, 
@@ -154,6 +154,18 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
   const [showGlossary, setShowGlossary] = useState(false);
   const [worksheetType, setWorksheetType] = useState<'student' | 'teacher' | null>(null);
   const [showSlideGenerator, setShowSlideGenerator] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const savedPlan = localStorage.getItem('saved_lesson_plan_draft');
+    if (savedPlan) {
+      try {
+        setPlan(JSON.parse(savedPlan));
+      } catch(e) {
+        console.error("Failed to parse saved lesson plan:", e);
+      }
+    }
+  }, []);
 
   const handleAnalyzeLesson = async () => {
     if (!plan.lessonContent?.text) return;
@@ -178,7 +190,7 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
       const response = await fetch('/api/generateLessonPlan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ promptText })
+        body: JSON.stringify({ promptText, isJson: true })
       });
       
       if (!response.ok) {
@@ -307,6 +319,9 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
       លើសពីនេះ បើចំណុចធំណាមួយមានចំណុចតូចៗទ្រនាប់ (-) នោះក្រឡោនទី២ ឬទី៣ដែលត្រូវគ្នា ក៏ត្រូវតែមានចំណុចធំនិងចំណុចតូចៗនោះដើរទន្ទឹមគ្នា ឬស៊ីសង្វាក់គ្នាដែរ (បើមិនមានសកម្មភាពផ្ទាល់ទេ អាចដាក់ជា "• តាមដាន" និង "- យកចិត្តទុកដាក់" ជាដើម ល្អជាងទុកចោលទទេ ដែលធ្វើឱ្យបាត់ជួរ)។
       ឧទាហរណ៍ជាក់ស្ដែង ក្នុងជំហានទី៣ បើ "teacherActivity" មាន ៣ ចំណុចធំ (•) នោះ "content" និង "studentActivity" ក៏ត្រូវមាន ៣ ចំណុចធំ (•) ដែរ។
 
+      ចំណាំទី៦ (ការដាក់រូបភាព)៖
+      សូមបញ្ចូល Placeholder សម្រាប់រូបភាព (ឧទាហរណ៍៖ [រូបភាព៖ បង្ហាញពី...] ទៅក្នុងក្រឡោន content ឬ teacherActivity ជាពិសេសនៅជំហានទី៣ (មេរៀនថ្មី) ត្រង់ចំណុចណាដែលគិតថាគួរតែមានរូបភាពដើម្បីជួយពន្យល់ដល់សិស្ស។
+
       សូមត្រលប់មកវិញតែជាទម្រង់ JSON object string ប៉ុណ្ណោះ ដោយមិនមាន markdown formatting (NO \`\`\`json) ហើយស្របតាមទម្រង់ដូចខាងក្រោម៖
       {
         "chapter": "១",
@@ -333,7 +348,7 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
       const response = await fetch('/api/generateLessonPlan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ promptText })
+        body: JSON.stringify({ promptText, isJson: true })
       });
       
       if (!response.ok) {
@@ -799,11 +814,18 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
                  <button onClick={() => window.print()} className="px-6 py-3 bg-slate-100 text-slate-500 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-200 transition-all">
                     <Download className="w-5 h-5" /> ទាញយកជា PDF
                  </button>
-                 <button onClick={() => setPlan(INITIAL_PLAN)} className="px-6 py-3 bg-rose-50 text-rose-600 rounded-xl font-bold flex items-center gap-2 hover:bg-rose-100 transition-all">
+                 <button onClick={() => {
+                   setPlan(INITIAL_PLAN);
+                   localStorage.removeItem('saved_lesson_plan_draft');
+                 }} className="px-6 py-3 bg-rose-50 text-rose-600 rounded-xl font-bold flex items-center gap-2 hover:bg-rose-100 transition-all">
                     លុប
                  </button>
-                 <button onClick={() => alert("រក្សាទុករួចរាល់!")} className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-black flex items-center gap-2 shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
-                    <Save className="w-5 h-5" /> រក្សាទុក
+                 <button onClick={() => {
+                   localStorage.setItem('saved_lesson_plan_draft', JSON.stringify(plan));
+                   setIsSaving(true);
+                   setTimeout(() => setIsSaving(false), 2000);
+                 }} disabled={isSaving} className={`px-6 py-3 text-white rounded-xl font-black flex items-center gap-2 shadow-lg hover:bg-indigo-700 transition-all ${isSaving ? 'bg-indigo-400 shadow-indigo-50' : 'bg-indigo-600 shadow-indigo-100'}`}>
+                    <Save className="w-5 h-5" /> {isSaving ? 'បានរក្សាទុក' : 'រក្សាទុក'}
                  </button>
               </div>
            </div>

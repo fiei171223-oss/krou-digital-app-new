@@ -21,11 +21,24 @@ export default function SlideGeneratorModal({ isOpen, onClose, plan }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (isOpen && !hasGenerated) {
-      generateSlideOutline();
-      setHasGenerated(true);
+      const storageKey = `slides_${plan.lessonTitle || 'draft'}`;
+      const savedSlides = localStorage.getItem(storageKey);
+      if (savedSlides) {
+        try {
+          setSlides(JSON.parse(savedSlides));
+          setHasGenerated(true);
+        } catch (e) {
+          generateSlideOutline();
+          setHasGenerated(true);
+        }
+      } else {
+        generateSlideOutline();
+        setHasGenerated(true);
+      }
     }
   }, [isOpen]);
 
@@ -35,12 +48,13 @@ export default function SlideGeneratorModal({ isOpen, onClose, plan }: Props) {
       const stepsArr = Object.values(plan.steps);
       const contentStr = stepsArr.map(s => s.content).filter(Boolean).join('\n');
       
-      const promptText = `អ្នកគឺជាអ្នកបង្កើតស្លាយបទបង្ហាញដ៏ចំណានម្នាក់។ សូមប្រែសម្រួលកិច្ចតែងការបង្រៀននេះទៅជាស្លាយបទបង្ហាញដ៏ទាក់ទាញ (Presentation Outline) ដោយគោរពតាមកម្រិត Bloom's Taxonomy ទាំង៦ (ចងចាំ យល់ វិភាគ អនុវត្ត វាយតម្លៃ បង្កើតថ្មី)។
+      const promptText = `អ្នកគឺជាអ្នកបង្កើតស្លាយបទបង្ហាញដ៏ចំណានម្នាក់។ សូមប្រែសម្រួលកិច្ចតែងការបង្រៀននេះទៅជាស្លាយបទបង្ហាញដ៏ទាក់ទាញ (Presentation Outline)។
 ម៉ោងសិក្សា៖ ${plan.subject}, មេរៀន៖ ${plan.lessonTitle}, ថ្នាក់ទី៖ ${plan.grade}
 
 ខ្លឹមសារមេរៀនពីកិច្ចតែងការ៖
 ${contentStr}
 
+សូមបង្កើតជាស្លាយបទបង្ហាញ ដោយយកតាមលំដាប់លំដោយនៃខ្លឹមសារមេរៀនពីកិច្ចតែងការខាងលើ (ពិសេសផ្តោតលើមេរៀនថ្មី និងសកម្មភាពពង្រឹងចំណេះដឹង)។
 សូមបង្កើតជាទម្រង់ JSON Array ដោយមិនមានពាក្យណែនាំអ្វីផ្សេង ដូចទម្រង់ខាងក្រោម៖
 [
   {
@@ -56,7 +70,7 @@ ${contentStr}
       const response = await fetch('/api/generateLessonPlan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ promptText })
+        body: JSON.stringify({ promptText, isJson: true })
       });
       
       if (!response.ok) throw new Error('Failed to generate slides outline');
@@ -234,11 +248,16 @@ ${contentStr}
                 ចងក្រងម្ដងទៀត
              </button>
              <button 
-                onClick={() => alert("រក្សាទុករួចរាល់!")}
-                disabled={isLoading || slides.length === 0}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-bold transition disabled:opacity-50"
+                onClick={() => {
+                  const storageKey = `slides_${plan.lessonTitle || 'draft'}`;
+                  localStorage.setItem(storageKey, JSON.stringify(slides));
+                  setIsSaving(true);
+                  setTimeout(() => setIsSaving(false), 2000);
+                }}
+                disabled={isLoading || slides.length === 0 || isSaving}
+                className={`px-4 py-2 text-white rounded-lg text-sm font-bold transition disabled:opacity-50 ${isSaving ? 'bg-emerald-500' : 'bg-emerald-600 hover:bg-emerald-700'}`}
               >
-                រក្សាទុក
+                {isSaving ? 'បានរក្សាទុក' : 'រក្សាទុក'}
              </button>
              <button 
                 onClick={handleDownloadPPTX}

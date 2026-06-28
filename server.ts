@@ -28,16 +28,45 @@ async function startServer() {
       }
 
       const ai = new GoogleGenAI({ apiKey });
-      const { promptText } = req.body;
+      const { promptText, isJson } = req.body;
 
       if (!promptText) {
         return res.status(400).json({ error: "promptText is required" });
       }
 
-      const response = await ai.models.generateContent({
-        model: "gemini-flash-latest",
-        contents: [promptText]
-      });
+      let response;
+      let retries = 8;
+      let delay = 1000;
+      let modelsToTry = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash"];
+      let currentModelIndex = 0;
+      
+      const config: any = {};
+      if (isJson) {
+        config.responseMimeType = "application/json";
+      }
+
+      while (retries > 0) {
+        try {
+          response = await ai.models.generateContent({
+            model: modelsToTry[currentModelIndex],
+            contents: [promptText],
+            config: config
+          });
+          break; // success
+        } catch (error: any) {
+          retries--;
+          const errorMessage = error.message || "";
+          console.error(`Model API error with ${modelsToTry[currentModelIndex]} (${errorMessage})`);
+          if ((errorMessage.includes("UNAVAILABLE") || errorMessage.includes("high demand") || errorMessage.includes("503") || errorMessage.includes("429") || errorMessage.includes("Quota")) && retries > 0) {
+            console.log(`Retrying... (${retries} retries left)`);
+            currentModelIndex = (currentModelIndex + 1) % modelsToTry.length;
+            await new Promise(resolve => setTimeout(resolve, delay));
+            delay *= 1.25; 
+          } else {
+            throw error;
+          }
+        }
+      }
 
       res.json({ text: response.text });
     } catch (error: any) {
