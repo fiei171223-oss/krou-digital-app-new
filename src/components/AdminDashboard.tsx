@@ -2,22 +2,9 @@ import React, { useMemo } from 'react';
 import { Users, School, MapPin, DollarSign, TrendingUp } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-// Mock data since real database is not fully integrated for this example
-const chartData = [
-  { name: 'មករា', users: 120 },
-  { name: 'កុម្ភៈ', users: 250 },
-  { name: 'មីនា', users: 380 },
-  { name: 'មេសា', users: 490 },
-  { name: 'ឧសភា', users: 650 },
-  { name: 'មិថុនា', users: 820 },
-];
-
 export default function AdminDashboard() {
-  const stats = useMemo(() => {
-    // In a real app, this would come from a backend or localStorage parsing
-    // For now, we simulate based on potential localStorage data
-    
-    // Simulate reading from local storage (if there were actual teacher accounts stored)
+  const { stats, chartData } = useMemo(() => {
+    // Read from local storage to get real teacher accounts
     const storedAccountsStr = localStorage.getItem('teacher_accounts');
     let accounts: any[] = [];
     if (storedAccountsStr) {
@@ -26,29 +13,49 @@ export default function AdminDashboard() {
       } catch (e) {}
     }
     
-    // If empty, provide some default realistic mock data
-    if (accounts.length === 0) {
-      accounts = [
-        { province: 'រាជធានីភ្នំពេញ', school: 'សាលាបឋមសិក្សាព្រែកទាល់' },
-        { province: 'រាជធានីភ្នំពេញ', school: 'សាលាបឋមសិក្សាចតុមុខ' },
-        { province: 'បាត់ដំបង', school: 'សាលាបឋមសិក្សា១៣មករា' },
-        { province: 'សៀមរាប', school: 'សាលាបឋមសិក្សាវត្តបូព៌' },
-        { province: 'កំពង់ចាម', school: 'សាលាបឋមសិក្សាព្រះសីហនុ' }
-      ];
-    }
-
-    const uniqueProvinces = [...new Set(accounts.map(a => a.province).filter(Boolean))];
+    // We also need provinces, which aren't in TeacherAccount directly, but are entered on login.
+    // However, since we don't have them in TeacherAccount, let's extract school and assume province is linked if they provided it,
+    // or just rely on what is available in the data. LoginView seems to take provinceName, but TeacherAccount object only has school.
+    // If province isn't stored in teacher_accounts, we can just extract from school or just leave it empty.
+    const uniqueProvinces = [...new Set(accounts.map(a => a.province || 'មិនបញ្ជាក់').filter(Boolean))];
     const uniqueSchools = [...new Set(accounts.map(a => a.school).filter(Boolean))];
     
-    // Simulate revenue based on a fake subscription fee * total users (excluding free schools)
-    const paidUsers = Math.max(0, accounts.length - 1); // rough estimate
-    const revenue = paidUsers * 15; // e.g., $15/month
+    // Revenue calculation
+    // E.g., assume $15/month per paid user. Exclude 'សាលាបឋមសិក្សាព្រែកទាល់' if free.
+    const paidUsers = accounts.filter(a => a.school.trim() !== 'សាលាបឋមសិក្សាព្រែកទាល់').length;
+    const revenue = paidUsers * 15; 
+
+    // Generate chart data by month
+    const months = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
+    
+    // Initialize current year monthly data to 0
+    const currentYear = new Date().getFullYear();
+    const monthlyData = months.map((m) => ({ name: m, users: 0 }));
+
+    accounts.forEach(acc => {
+      if (acc.createdAt) {
+        const date = new Date(acc.createdAt);
+        if (date.getFullYear() === currentYear) {
+          monthlyData[date.getMonth()].users += 1;
+        }
+      }
+    });
+    
+    // For cumulative users in the chart
+    let cumulative = 0;
+    const computedChartData = monthlyData.map(m => {
+      cumulative += m.users;
+      return { ...m, users: cumulative };
+    });
 
     return {
-      totalUsers: accounts.length + 850, // Added 850 base for visual impact
-      provinces: uniqueProvinces.length > 0 ? uniqueProvinces : ['រាជធានីភ្នំពេញ', 'បាត់ដំបង', 'សៀមរាប', 'កំពង់ចាម'],
-      schools: uniqueSchools.length > 0 ? uniqueSchools : ['សាលាបឋមសិក្សាព្រែកទាល់', 'សាលាបឋមសិក្សាចតុមុខ', 'សាលាបឋមសិក្សា១៣មករា', 'សាលាបឋមសិក្សាវត្តបូព៌'],
-      revenue: revenue + 12500, // base revenue
+      stats: {
+        totalUsers: accounts.length,
+        provinces: uniqueProvinces,
+        schools: uniqueSchools,
+        revenue: revenue,
+      },
+      chartData: computedChartData
     };
   }, []);
 

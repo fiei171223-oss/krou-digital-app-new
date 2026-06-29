@@ -140,24 +140,24 @@ export default function AppHeader({ onLogout }: { onLogout?: () => void }) {
               </button>
               
               <div className="flex items-center gap-4">
-                <div className="hidden md:flex flex-col items-end justify-center gap-3">
-                  <span className="text-white font-bold text-sm leading-normal pb-1" style={{ fontFamily: isAdmin ? '"Khmer Mool1", Moul' : undefined }}>
+                <div className="hidden md:flex flex-col items-end justify-center gap-1.5">
+                  <span className="text-white font-bold text-sm leading-normal pb-0.5" style={{ fontFamily: isAdmin ? '"Khmer Mool1", Moul' : undefined }}>
                     {currentName}
                   </span>
-                  <span className="text-emerald-300 text-xs font-bold uppercase tracking-widest leading-normal pt-1" style={{ fontFamily: isAdmin ? '"Kh Muol Pali", Moul' : undefined }}>
+                  <span className="text-emerald-300 text-xs font-bold uppercase tracking-widest leading-normal pt-0.5" style={{ fontFamily: isAdmin ? '"Kh Muol Pali", Moul' : undefined }}>
                     {isAdmin ? 'អ្នកគ្រប់គ្រង' : 'គ្រូបង្រៀន'}
                   </span>
                 </div>
-                <div className="relative group">
-                  {/* Glow effect */}
-                  <div className={`absolute -inset-2 rounded-full blur-md opacity-60 transition-opacity group-hover:opacity-100 ${isAdmin ? 'bg-amber-500' : 'bg-yellow-400'}`}></div>
+                <div className="relative group ml-2">
+                  {/* Outer Glow */}
+                  <div className={`absolute -inset-3 rounded-full blur-lg opacity-70 transition-opacity group-hover:opacity-100 ${isAdmin ? 'bg-amber-500' : 'bg-yellow-400'}`}></div>
                   
-                  {/* Spinning Ring */}
-                  <div className={`absolute -inset-1 rounded-full border-[3px] border-t-transparent border-r-transparent animate-[spin_3s_linear_infinite] z-0 ${isAdmin ? 'border-amber-400' : 'border-yellow-400'}`}></div>
-                  <div className={`absolute -inset-1 rounded-full border-[3px] border-b-transparent border-l-transparent animate-[spin_4s_linear_infinite_reverse] z-0 ${isAdmin ? 'border-yellow-200' : 'border-amber-200'}`}></div>
+                  {/* Spinning Broken Rings */}
+                  <div className={`absolute -inset-1.5 rounded-full border-[3px] border-t-transparent border-b-transparent animate-[spin_4s_linear_infinite] z-0 ${isAdmin ? 'border-amber-400' : 'border-yellow-400'}`}></div>
+                  <div className={`absolute -inset-1.5 rounded-full border-[3px] border-l-transparent border-r-transparent animate-[spin_3s_linear_infinite_reverse] z-0 opacity-50 ${isAdmin ? 'border-amber-300' : 'border-yellow-300'}`}></div>
 
                   {/* Avatar Container */}
-                  <div className="relative z-10 w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center border-[2px] border-white shadow-2xl transition-all hover:scale-110 active:scale-95 overflow-hidden">
+                  <div className="relative z-10 w-14 h-14 bg-slate-800 rounded-full flex items-center justify-center border-[2px] border-white shadow-2xl transition-all hover:scale-105 overflow-hidden">
                     {user?.photoURL ? (
                       <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     ) : currentAvatar ? (

@@ -115,31 +115,38 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
       return;
     }
 
-    // Verify Teacher Credentials
+    // Verify Teacher Credentials or Auto-register
     const storedAccounts = localStorage.getItem('teacher_accounts');
-    let isValidTeacher = false;
-    
+    let accounts: any[] = [];
     if (storedAccounts) {
-      const accounts = JSON.parse(storedAccounts);
-      // Find matching teacher
-      const match = accounts.find((a: any) => 
-        a.school.trim() === schoolName.trim() && 
-        a.name.trim() === teacherName.trim() && 
-        a.code === teacherCode
-      );
-      if (match) isValidTeacher = true;
+      try {
+        accounts = JSON.parse(storedAccounts);
+      } catch (e) {}
     }
 
-    // Temporary fallback for testing/demo if no accounts exist at all
-    if (!isValidTeacher && (!storedAccounts || JSON.parse(storedAccounts).length === 0)) {
-      if (teacherCode === '123456') {
-        isValidTeacher = true; // allow demo code if no explicit accounts created yet
+    // Find matching teacher
+    const existingTeacher = accounts.find((a: any) => 
+      a.school.trim() === schoolName.trim() && 
+      a.name.trim() === teacherName.trim()
+    );
+
+    if (existingTeacher) {
+      if (existingTeacher.code !== teacherCode) {
+        setError('លេខកូដសម្ងាត់មិនត្រឹមត្រូវទេ!');
+        return;
       }
-    }
-
-    if (!isValidTeacher) {
-      setError('ឈ្មោះសាលា ឈ្មោះគ្រូ ឬលេខកូដមិនត្រឹមត្រូវទេ! (សូមទាក់ទង ADMIN ដើម្បីបង្កើតគណនី)');
-      return;
+    } else {
+      // Auto-register new teacher
+      const newTeacher = {
+        id: Date.now().toString(),
+        name: teacherName.trim(),
+        school: schoolName.trim(),
+        province: provinceName.trim(),
+        code: teacherCode,
+        createdAt: new Date().toISOString()
+      };
+      accounts.push(newTeacher);
+      localStorage.setItem('teacher_accounts', JSON.stringify(accounts));
     }
     
     // Check subscription logic
@@ -379,11 +386,18 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
               <h2 className="text-xl font-black font-kantumruy leading-relaxed text-slate-800 text-center mb-4">ចូលគណនីគ្រូ</h2>
 
               {/* Teacher Avatar Upload */}
-              <div className="relative w-24 h-24 mb-2 mx-auto">
+              <div className="relative w-28 h-28 mb-4 mx-auto group">
                 {teacherAvatar ? (
-                  <img src={teacherAvatar} alt="Teacher" className="w-24 h-24 rounded-full object-cover shadow-lg border-4 border-indigo-100" />
+                  <>
+                    <div className="absolute -inset-3 rounded-full blur-lg opacity-70 bg-yellow-400"></div>
+                    <div className="absolute -inset-1.5 rounded-full border-[3px] border-t-transparent border-b-transparent animate-[spin_4s_linear_infinite] z-0 border-yellow-400"></div>
+                    <div className="absolute -inset-1.5 rounded-full border-[3px] border-l-transparent border-r-transparent animate-[spin_3s_linear_infinite_reverse] z-0 opacity-50 border-yellow-300"></div>
+                    <div className="relative z-10 w-28 h-28 bg-slate-800 rounded-full flex items-center justify-center border-[2px] border-white shadow-2xl overflow-hidden">
+                      <img src={teacherAvatar} alt="Teacher" className="w-full h-full object-cover" />
+                    </div>
+                  </>
                 ) : (
-                  <div className="w-24 h-24 bg-indigo-50 rounded-full flex flex-col items-center justify-center shadow-inner border-2 border-dashed border-indigo-300 hover:bg-indigo-100 transition-colors cursor-pointer overflow-hidden relative group">
+                  <div className="w-28 h-28 bg-indigo-50 rounded-full flex flex-col items-center justify-center shadow-inner border-2 border-dashed border-indigo-300 hover:bg-indigo-100 transition-colors cursor-pointer overflow-hidden relative group">
                     <User className="w-8 h-8 text-indigo-400 mb-1 group-hover:scale-110 transition-transform" />
                     <span className="text-[10px] text-indigo-600 font-bold whitespace-nowrap">ដាក់រូបថត</span>
                     <input 
@@ -497,11 +511,18 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
           ) : (
             // ==================== ADMIN LOGIN ====================
             <div className="flex flex-col items-center w-full">
-              <div className="relative w-24 h-24 mb-4 mx-auto">
+              <div className="relative w-28 h-28 mb-6 mx-auto group">
                 {adminAvatar ? (
-                  <img src={adminAvatar} alt="Admin" className="w-24 h-24 rounded-full object-cover shadow-lg border-4 border-violet-100" />
+                  <>
+                    <div className="absolute -inset-3 rounded-full blur-lg opacity-70 bg-amber-500"></div>
+                    <div className="absolute -inset-1.5 rounded-full border-[3px] border-t-transparent border-b-transparent animate-[spin_4s_linear_infinite] z-0 border-amber-400"></div>
+                    <div className="absolute -inset-1.5 rounded-full border-[3px] border-l-transparent border-r-transparent animate-[spin_3s_linear_infinite_reverse] z-0 opacity-50 border-amber-300"></div>
+                    <div className="relative z-10 w-28 h-28 bg-slate-800 rounded-full flex items-center justify-center border-[2px] border-white shadow-2xl overflow-hidden">
+                      <img src={adminAvatar} alt="Admin" className="w-full h-full object-cover" />
+                    </div>
+                  </>
                 ) : (
-                  <div className="w-24 h-24 bg-violet-50 rounded-full flex flex-col items-center justify-center shadow-inner border-2 border-dashed border-violet-300 hover:bg-violet-100 transition-colors cursor-pointer overflow-hidden relative group">
+                  <div className="w-28 h-28 bg-violet-50 rounded-full flex flex-col items-center justify-center shadow-inner border-2 border-dashed border-violet-300 hover:bg-violet-100 transition-colors cursor-pointer overflow-hidden relative group">
                     <User className="w-8 h-8 text-violet-400 mb-1 group-hover:scale-110 transition-transform" />
                     <span className="text-[10px] text-violet-600 font-bold whitespace-nowrap">ដាក់រូបថត</span>
                     <input 
