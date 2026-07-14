@@ -160,7 +160,21 @@ export default function LessonPlanForm({ onBack }: LessonPlanFormProps) {
     const savedPlan = localStorage.getItem('saved_lesson_plan_draft');
     if (savedPlan) {
       try {
-        setPlan(JSON.parse(savedPlan));
+        const parsed = JSON.parse(savedPlan);
+        setPlan(prev => ({
+          ...prev,
+          ...parsed,
+          objectives: { ...prev.objectives, ...(parsed.objectives || {}) },
+          materials: { ...prev.materials, ...(parsed.materials || {}) },
+          steps: {
+            step1: { ...prev.steps.step1, ...(parsed.steps?.step1 || {}) },
+            step2: { ...prev.steps.step2, ...(parsed.steps?.step2 || {}) },
+            step3: { ...prev.steps.step3, ...(parsed.steps?.step3 || {}) },
+            step4: { ...prev.steps.step4, ...(parsed.steps?.step4 || {}) },
+            step5: { ...prev.steps.step5, ...(parsed.steps?.step5 || {}) },
+          },
+          lessonContent: { ...prev.lessonContent, ...(parsed.lessonContent || {}) }
+        }));
       } catch(e) {
         console.error("Failed to parse saved lesson plan:", e);
       }

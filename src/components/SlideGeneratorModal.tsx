@@ -202,7 +202,7 @@ ${contentStr}
           if (slide.content && slide.content.length > 0) {
             let contentText = slide.content.map(c => c).join('\n\n');
             presSlide.addText(contentText, {
-              x: 0.5, y: 1.5, w: 9, h: 3.5, fontSize: 22, color: colors.dark, fontFace: 'Khmer OS Battambang', align: 'left', bullet: true, color: colors.dark
+              x: 0.5, y: 1.5, w: 9, h: 3.5, fontSize: 22, color: colors.dark, fontFace: 'Khmer OS Battambang', align: 'left', bullet: true
             });
           }
         }

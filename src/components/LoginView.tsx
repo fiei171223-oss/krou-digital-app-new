@@ -22,10 +22,10 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
   const ADMIN_PIN = "168168"; // The special PIN code
 
   // Teacher details
-  const [provinceName, setProvinceName] = useState('');
-  const [schoolName, setSchoolName] = useState('សាលាបឋមសិក្សាព្រែកទាល់');
-  const [teacherName, setTeacherName] = useState('');
-  const [teacherCode, setTeacherCode] = useState('');
+  const [provinceName, setProvinceName] = useState(() => localStorage.getItem('user_province') || '');
+  const [schoolName, setSchoolName] = useState(() => localStorage.getItem('user_school') || 'សាលាបឋមសិក្សាព្រែកទាល់');
+  const [teacherName, setTeacherName] = useState(() => localStorage.getItem('user_teacher') || '');
+  const [teacherCode, setTeacherCode] = useState(() => localStorage.getItem('user_code') || '');
 
   // Admin Avatar
   const [adminAvatar, setAdminAvatar] = useState<string | null>(() => localStorage.getItem('admin_avatar'));
@@ -158,6 +158,7 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
       localStorage.setItem('user_province', provinceName);
       localStorage.setItem('user_school', schoolName);
       localStorage.setItem('user_teacher', teacherName);
+      localStorage.setItem('user_code', teacherCode);
       localStorage.removeItem('adminName');
       onLogin();
     } else {
@@ -186,6 +187,7 @@ export default function LoginView({ onLogin }: { onLogin: () => void }) {
       localStorage.setItem('user_province', provinceName);
       localStorage.setItem('user_school', schoolName);
       localStorage.setItem('user_teacher', teacherName);
+      localStorage.setItem('user_code', teacherCode);
       localStorage.removeItem('adminName');
       
       if (hasActiveSub) {

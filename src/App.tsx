@@ -64,7 +64,8 @@ import {
   ClipboardCheck,
   FileEdit,
   Menu,
-  Presentation
+  Presentation,
+  Video
 } from 'lucide-react';
 import { db, auth } from './lib/firebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
@@ -98,6 +99,8 @@ import TeachingStrategiesView from './components/TeachingStrategiesView';
 import TeacherToolboxView from './components/TeacherToolboxView';
 import StudentRewardsView from './components/StudentRewardsView';
 import LessonPlanForm from './components/LessonPlanForm';
+import EducationalGamesView from './components/EducationalGamesView';
+import DemoClassesView from './components/DemoClassesView';
 import GenericPDFArchiveView from './components/GenericPDFArchiveView';
 import MonthlyAttendanceReport from './components/MonthlyAttendanceReport';
 import AdminDashboard from './components/AdminDashboard';
@@ -283,6 +286,8 @@ export default function App() {
               {view === 'toolbox' && <TeacherToolboxView onBack={onBack} />}
               {view === 'student-rewards' && <StudentRewardsView onBack={onBack} />}
               {view === 'lesson-plan' && <LessonPlanForm onBack={onBack} />}
+              {view === 'edu-games' && <EducationalGamesView onBack={onBack} />}
+              {view === 'demo-classes' && <DemoClassesView onBack={onBack} />}
               {view === 'absent-list' && <MonthlyAttendanceReport onBack={onBack} />}
               
               {view === 'library' && (
@@ -336,7 +341,7 @@ export default function App() {
                 />
               )}
               
-              {!['dashboard', 'attendance', 'student-management', 'score-analysis', 'grade-summary', 'daily-logs', 'teacher-dev', 'classroom-tools', 'admin-calendar', 'student-card', 'school-archive', 'difficult-words', 'at-risk-warning', 'qr-scanner', 'schedule', 'parent-comm', 'classroom-mgmt', 'administration', 'resources', 'egr-package', 'egr-math', 'certificates', 'seating-chart', 'teaching-strategies', 'toolbox', 'student-rewards', 'lesson-plan', 'absent-list', 'library', 'materials', 'pisa-test', 'sea-plm-test', 'homework'].includes(view) && (
+              {!['dashboard', 'attendance', 'student-management', 'score-analysis', 'grade-summary', 'daily-logs', 'teacher-dev', 'classroom-tools', 'admin-calendar', 'student-card', 'school-archive', 'difficult-words', 'at-risk-warning', 'qr-scanner', 'schedule', 'parent-comm', 'classroom-mgmt', 'administration', 'resources', 'egr-package', 'egr-math', 'certificates', 'seating-chart', 'teaching-strategies', 'toolbox', 'student-rewards', 'lesson-plan', 'edu-games', 'demo-classes', 'absent-list', 'library', 'materials', 'pisa-test', 'sea-plm-test', 'homework'].includes(view) && (
                 <div className="text-center py-20 bg-white rounded-[3rem] shadow-xl border border-dashed border-slate-200">
                   <AlertTriangle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
                   <h2 className="text-2xl font-black font-kantumruy">ផ្នែកនេះកំពុងអភិវឌ្ឍ...</h2>
@@ -448,6 +453,7 @@ function Dashboard({ setView, atRiskCount }: { setView: (view: string) => void, 
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5">
           <MenuCard title="បង្កើតកិច្ចតែងការ" icon={<BookText />} color="amber" onClick={() => setView('lesson-plan')} />
+          <MenuCard title="ល្បែងសិក្សា" icon={<Gamepad2 />} color="orange" onClick={() => setView('edu-games')} />
           <MenuCard title="ជំនួយការគ្រូ AI" icon={<Sparkles />} color="violet" onClick={() => setView('classroom-tools')} />
           <MenuCard title="កាលវិភាគបង្រៀន" icon={<Calendar />} color="cyan" onClick={() => setView('schedule')} />
           <MenuCard title="វិធីសាស្ត្របង្រៀន" icon={<Lightbulb />} color="fuchsia" onClick={() => setView('teaching-strategies')} />
@@ -505,6 +511,7 @@ function Dashboard({ setView, atRiskCount }: { setView: (view: string) => void, 
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5">
           <MenuCard title="អភិវឌ្ឍន៍វិជ្ជាជីវៈ" icon={<Briefcase />} color="emerald2" onClick={() => setView('teacher-dev')} />
+          <MenuCard title="ថ្នាក់និទស្សន៍" icon={<Video />} color="teal" onClick={() => setView('demo-classes')} />
         </div>
       </section>
     </div>
